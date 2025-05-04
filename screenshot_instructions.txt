@@ -1,0 +1,8 @@
+To create a screenshot for the README.md:
+
+1. Open the index.html file in a modern browser
+2. Ensure the ventilator diagram is visible and the dark mode is off
+3. Take a full-page screenshot
+4. Save the image as "screenshot.png" in the root directory
+5. Resize the image if needed to be around 1200px wide
+6. Compress the image to reduce file size 

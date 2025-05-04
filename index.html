@@ -8,48 +8,119 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         :root {
-            --primary-color: #3498db;
-            --secondary-color: #2ecc71;
-            --warning-color: #f39c12;
-            --danger-color: #e74c3c;
-            --dark-bg: #2c3e50;
-            --light-bg: #ecf0f1;
+            --primary-color: #4361ee;
+            --secondary-color: #3bc14a;
+            --warning-color: #fca311;
+            --danger-color: #e5383b;
+            --dark-bg: #212529;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, #4361ee, #3a0ca3);
+            --gradient-secondary: linear-gradient(135deg, #3bc14a, #2ecc71);
+            --gradient-warning: linear-gradient(135deg, #fca311, #f39c12);
+            --gradient-danger: linear-gradient(135deg, #e5383b, #e74c3c);
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
             background-color: #f8f9fa;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        
+        /* Dark mode */
+        body.dark-mode {
+            background-color: #212529;
+            color: #f8f9fa;
+        }
+        
+        /* Ventilator diagram animations */
+        @keyframes glow {
+            0% { filter: drop-shadow(0 0 2px #4361ee); }
+            50% { filter: drop-shadow(0 0 8px #4361ee); }
+            100% { filter: drop-shadow(0 0 2px #4361ee); }
+        }
+        
+        .highlight-glow {
+            animation: glow 1.5s infinite ease-in-out;
+        }
+        
+        @keyframes circlePulse {
+            0% { r: 3; opacity: 0.7; }
+            50% { r: 6; opacity: 1; }
+            100% { r: 3; opacity: 0.7; }
+        }
+        
+        #airFlow circle, #oxygenFlow circle, #outputFlow circle {
+            animation: circlePulse 2s infinite ease-in-out;
+        }
+        
+        .header-container {
+            background: var(--gradient-primary);
+            padding: 1.5rem;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 2rem;
+            color: white;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .app-title {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin: 0;
+        }
+        
+        .app-subtitle {
+            opacity: 0.9;
+            font-weight: 300;
+            margin-bottom: 0;
         }
         
         .card {
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
             margin-bottom: 20px;
             border: none;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
         }
         
         .card-header {
             background-color: var(--primary-color);
             color: white;
-            border-radius: 10px 10px 0 0 !important;
+            border-radius: 12px 12px 0 0 !important;
             font-weight: 600;
+            padding: 0.8rem 1.2rem;
+            border-bottom: none;
         }
         
         .parameter-value {
-            font-weight: bold;
-            font-size: 1.1rem;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--primary-color);
         }
         
         .alert-indicator {
-            width: 20px;
-            height: 20px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             display: inline-block;
             margin-right: 8px;
+            position: relative;
+            top: -1px;
         }
         
         .alert-normal {
@@ -67,22 +138,30 @@
         .graph-container {
             height: 250px;
             position: relative;
+            padding: 10px;
         }
         
         .mode-selector {
-            background-color: var(--dark-bg);
+            background: var(--gradient-primary);
             color: white;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 15px;
+            border-radius: 10px;
             margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .parameter-card {
             background-color: white;
             border-left: 4px solid var(--primary-color);
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+        
+        .parameter-card:hover {
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
         }
         
         .suggestion-card {
@@ -96,295 +175,1259 @@
         .danger-card {
             border-left: 4px solid var(--danger-color);
         }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 0.6rem 0.75rem;
+            border: 1px solid #dee2e6;
+            transition: all 0.3s;
+        }
         
-        .dark-mode {
-            background-color: #343a40;
-            color: #f8f9fa;
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+        }
+        
+        .btn {
+            border-radius: 8px;
+            padding: 0.6rem 1.2rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #3a56d4, #3209a3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
         .dark-mode .card {
-            background-color: #495057;
-            color: #f8f9fa;
+            background-color: #343a40;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
         }
         
         .dark-mode .parameter-card {
-            background-color: #495057;
-            color: #f8f9fa;
+            background-color: #343a40;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         
         .dark-mode .form-control, .dark-mode .form-select {
-            background-color: #6c757d;
+            background-color: #495057;
             color: #f8f9fa;
-            border-color: #495057;
+            border-color: #6c757d;
+        }
+        
+        .dark-mode .parameter-value {
+            color: #7db0ff;
+        }
+        
+        #darkModeToggle {
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        /* Ventilator Diagram Styles */
+        .diagram-container {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            transition: all 0.3s ease;
+        }
+        
+        .dark-mode .diagram-container {
+            background-color: #343a40;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+        }
+        
+        .component-info {
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .dark-mode .component-info {
+            background-color: rgba(67, 97, 238, 0.15) !important;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .ventilator-schematic-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+            border: none;
+            background-color: white;
+        }
+        
+        .ventilator-schematic-header {
+            background-color: #4361ee;
+            color: white;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            border-bottom: none;
+            display: flex;
+            align-items: center;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .ventilator-schematic-body {
+            padding: 0;
+            background-color: #fff;
+            border-radius: 0 0 12px 12px;
+        }
+        
+        .component-details-section {
+            padding: 2rem;
+            background-color: #f9f9ff;
+            min-height: 350px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            border-left: 4px solid #4361ee;
+        }
+        
+        .dark-mode .component-details-section {
+            background-color: #343a40;
+        }
+        
+        .hotspot {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: #4361ee;
+            border: 2px solid white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hotspot:hover, .hotspot.active {
+            background-color: #3a0ca3;
+            transform: translate(-50%, -50%) scale(1.3);
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.3);
+        }
+        
+        .component-details-card {
+            border-left: 4px solid #4361ee;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .dark-mode .component-details-card {
+            background-color: #495057;
+        }
+        
+        .component-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #4361ee;
+        }
+        
+        .component-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .component-section {
+            border-left: 3px solid #4361ee;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+            background-color: rgba(67, 97, 238, 0.03);
+            padding: 1rem 1rem 1rem 1.25rem;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .dark-mode .component-section {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+        
+        .component-label {
+            display: inline-flex;
+            align-items: center;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+        
+        .dark-mode .component-label {
+            color: #ccc;
+        }
+        
+        .component-text {
+            line-height: 1.6;
+        }
+        
+        /* Pulse animation for hotspots */
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(67, 97, 238, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(67, 97, 238, 0);
+            }
+        }
+        
+        .hotspot.pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        .component-icon-large {
+            font-size: 3.5rem;
+            color: #4361ee;
+            margin-bottom: 1rem;
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            text-align: center;
+            border-radius: 50%;
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+        
+        .component-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.75rem;
+            color: #333;
+        }
+        
+        .dark-mode .component-title {
+            color: #f8f9fa;
+        }
+        
+        .component-label {
+            display: inline-flex;
+            align-items: center;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #555;
+            font-size: 1.1rem;
+        }
+        
+        .component-label-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #f1f3ff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            color: #4361ee;
+        }
+        
+        .dark-mode .component-label {
+            color: #ccc;
+        }
+        
+        .component-text {
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+        
+        /* Theme Colors */
+        body.theme-blue {
+            --primary-color: #4361ee;
+            --secondary-color: #3bc14a;
+            --warning-color: #fca311;
+            --danger-color: #e5383b;
+            --gradient-primary: linear-gradient(135deg, #4361ee, #3a0ca3);
+        }
+        
+        body.theme-green {
+            --primary-color: #2ecc71;
+            --secondary-color: #3498db;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --gradient-primary: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+        
+        body.theme-purple {
+            --primary-color: #9b59b6;
+            --secondary-color: #3498db;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --gradient-primary: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+        
+        body.theme-dark {
+            --primary-color: #6c5ce7;
+            --secondary-color: #00b894;
+            --warning-color: #fdcb6e;
+            --danger-color: #d63031;
+            --gradient-primary: linear-gradient(135deg, #6c5ce7, #4834d4);
+        }
+        
+        /* Style language and theme selectors */
+        .language-selector, 
+        .theme-selector {
+            margin-left: 10px;
+            position: relative;
+        }
+        
+        .language-selector select,
+        .theme-selector select {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            appearance: none;
+            cursor: pointer;
+            outline: none;
+            font-weight: 500;
+        }
+        
+        .language-selector::after,
+        .theme-selector::after {
+            content: "▼";
+            font-size: 0.7rem;
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: white;
+        }
+        
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+        }
+        
+        .header-dropdown {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-left: 10px;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            font-weight: 500;
+        }
+        
+        .header-dropdown i {
+            margin-right: 5px;
+        }
+        
+        /* Dark mode styles */
+        body.dark-mode {
+            background-color: #121212;
+            color: rgba(255, 255, 255, 0.87);
+        }
+        
+        body.dark-mode .card {
+            background-color: #1e1e1e;
+            border-color: #2d2d2d;
+        }
+        
+        body.dark-mode .card-header {
+            background-color: #2d2d2d;
+            border-bottom-color: #333;
+            color: rgba(255, 255, 255, 0.87);
+        }
+        
+        body.dark-mode .parameter-card {
+            background-color: #1e1e1e;
+            border-color: #2d2d2d;
+        }
+        
+        body.dark-mode input,
+        body.dark-mode select,
+        body.dark-mode textarea,
+        body.dark-mode .form-control,
+        body.dark-mode .form-select {
+            background-color: #2d2d2d;
+            border-color: #333;
+            color: rgba(255, 255, 255, 0.87);
+        }
+        
+        body.dark-mode .dropdown-menu {
+            background-color: #2d2d2d;
+            border-color: #333;
+        }
+        
+        body.dark-mode .dropdown-item {
+            color: rgba(255, 255, 255, 0.87);
+        }
+        
+        body.dark-mode .dropdown-item:hover {
+            background-color: #3d3d3d;
+        }
+        
+        body.dark-mode .table {
+            color: rgba(255, 255, 255, 0.87);
+        }
+        
+        body.dark-mode .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        body.dark-mode .table th, 
+        body.dark-mode .table td {
+            border-color: #333;
+        }
+        
+        body.dark-mode .modal-content {
+            background-color: #1e1e1e;
+            border-color: #2d2d2d;
+        }
+        
+        body.dark-mode .modal-header,
+        body.dark-mode .modal-footer {
+            border-color: #333;
+        }
+        
+        body.dark-mode .list-group-item {
+            background-color: #1e1e1e;
+            border-color: #2d2d2d;
+            color: rgba(255, 255, 255, 0.87);
+        }
+        
+        body.dark-mode .text-muted {
+            color: rgba(255, 255, 255, 0.6) !important;
+        }
+        
+        body.dark-mode ::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        body.dark-mode ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+        
+        body.dark-mode ::-webkit-scrollbar-thumb {
+            background-color: #3d3d3d;
+            border-radius: 6px;
+            border: 3px solid #1e1e1e;
+        }
+        
+        body.dark-mode hr {
+            border-color: #333;
+        }
+        
+        @keyframes highlight {
+            0% { background-color: rgba(67, 97, 238, 0.2); }
+            100% { background-color: white; }
+        }
+        
+        body.dark-mode .highlight-update {
+            animation-name: highlight-dark;
+        }
+        
+        @keyframes highlight-dark {
+            0% { background-color: rgba(67, 97, 238, 0.2); }
+            100% { background-color: #1e1e1e; }
+        }
+        
+        .highlight-update {
+            animation: highlight 1.5s ease-out;
+        }
+        
+        /* Quick Action Button Styles */
+        .quick-action-btn {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .quick-action-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-outline-success {
+            color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .btn-outline-success:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-outline-warning {
+            color: var(--warning-color);
+            border-color: var(--warning-color);
+        }
+        
+        .btn-outline-warning:hover {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .btn-outline-info {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            opacity: 0.8;
+        }
+        
+        .btn-outline-info:hover {
+            background-color: var(--primary-color);
+            color: white;
+            opacity: 1;
+        }
+        
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 15px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            background: var(--gradient-primary);
+            color: white;
+            border-bottom: none;
+            padding: 1.2rem 1.5rem;
+        }
+        
+        .modal-footer {
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 1.5rem;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .accordion-button:not(.collapsed) {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .accordion-button:focus {
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+        
+        body.dark-mode .modal-content {
+            background-color: #1e1e1e;
+        }
+        
+        body.dark-mode .modal-header {
+            border-bottom: none;
+        }
+        
+        body.dark-mode .modal-footer {
+            border-top: 1px solid #333;
+        }
+        
+        body.dark-mode .accordion-item {
+            background-color: #1e1e1e;
+            border-color: #333;
+        }
+        
+        body.dark-mode .accordion-button {
+            background-color: #2d2d2d;
+            color: rgba(255, 255, 255, 0.87);
+        }
+        
+        body.dark-mode .accordion-button:not(.collapsed) {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: #fff;
+        }
+        
+        body.dark-mode .accordion-body {
+            background-color: #1e1e1e;
+            color: rgba(255, 255, 255, 0.87);
+        }
+        
+        /* Toast Styles */
+        .toast {
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
     </style>
+    
+    <script>
+        // This code will be executed after the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add animation style for diagram interactions
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes glow {
+                    0% { filter: drop-shadow(0 0 2px #4361ee); }
+                    50% { filter: drop-shadow(0 0 8px #4361ee); }
+                    100% { filter: drop-shadow(0 0 2px #4361ee); }
+                }
+                .highlight-glow {
+                    animation: glow 1.5s infinite ease-in-out;
+                }
+                
+                @keyframes circlePulse {
+                    0% { r: 3; opacity: 0.7; }
+                    50% { r: 6; opacity: 1; }
+                    100% { r: 3; opacity: 0.7; }
+                }
+                
+                #airFlow circle, #oxygenFlow circle, #outputFlow circle {
+                    animation: circlePulse 2s infinite ease-in-out;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
 </head>
-<body>
-    <div class="container-fluid py-3">
-        <div class="row mb-4">
-            <div class="col-md-12">
+<body class="theme-blue">
+    <div class="container-fluid px-0">
+        <!-- Enhanced Header -->
+        <div class="header-container">
+            <div class="container">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h1><i class="fas fa-lungs me-2"></i>Ventilator Assistant</h1>
-                    <button id="darkModeToggle" class="btn btn-outline-secondary">
-                        <i class="fas fa-moon"></i> Dark Mode
-                    </button>
-                </div>
-                <p class="text-muted">Clinical decision support for mechanical ventilation management</p>
-            </div>
-        </div>
-        
-        <div class="row">
-            <!-- Left Column -->
-            <div class="col-md-4">
-                <!-- Patient Data Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-user me-2"></i>Patient Data
+                    <div>
+                        <h1 class="app-title"><i class="fas fa-lungs me-2"></i>Ventilator Assistant</h1>
+                        <p class="app-subtitle">Clinical decision support for mechanical ventilation management</p>
                     </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label for="patientWeight" class="form-label">Weight (kg)</label>
-                            <input type="number" class="form-control" id="patientWeight" value="50">
-                        </div>
-                        <div class="mb-3">
-                            <label for="patientCondition" class="form-label">Condition</label>
-                            <select class="form-select" id="patientCondition">
-                                <option value="normal">Normal</option>
-                                <option value="ards">ARDS</option>
-                                <option value="copd">COPD</option>
-                                <option value="postop">Post-operative</option>
-                                <option value="neuro">Neuromuscular</option>
+                    <div class="action-buttons">
+                        <div class="language-selector">
+                            <select id="languageSelector">
+                                <option value="en">English</option>
+                                <option value="es">Español</option>
+                                <option value="fr">Français</option>
+                                <option value="de">Deutsch</option>
+                                <option value="zh">中文</option>
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label for="idealVt" class="form-label">Ideal Vt (mL/kg)</label>
-                            <input type="number" class="form-control" id="idealVt" value="7" min="4" max="8">
-                            <small class="text-muted">ARDS: 4-6, Normal: 6-8</small>
+                        <div class="theme-selector">
+                            <select id="themeSelector">
+                                <option value="theme-blue">Blue</option>
+                                <option value="theme-green">Green</option>
+                                <option value="theme-purple">Purple</option>
+                                <option value="theme-dark">Dark</option>
+                            </select>
                         </div>
-                        <button id="calculateVt" class="btn btn-primary">
-                            <i class="fas fa-calculator me-2"></i>Calculate Ideal Vt
+                        <button id="darkModeToggle" class="btn btn-light ms-3">
+                            <i class="fas fa-moon me-2"></i>Dark Mode
                         </button>
                     </div>
                 </div>
-                
-                <!-- Ventilator Settings Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-cog me-2"></i>Ventilator Settings
-                    </div>
-                    <div class="card-body">
-                        <div class="mode-selector">
-                            <label for="ventMode" class="form-label text-white">Mode</label>
-                            <select class="form-select" id="ventMode">
-                                <option value="vc_ac">Volume Control A/C</option>
-                                <option value="pc_ac">Pressure Control A/C</option>
-                                <option value="simv_vc">SIMV Volume Control</option>
-                                <option value="simv_pc">SIMV Pressure Control</option>
-                                <option value="psv">Pressure Support</option>
-                            </select>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="tidalVolume" class="form-label">Tidal Volume (mL)</label>
-                                <input type="number" class="form-control" id="tidalVolume" value="350">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="respRate" class="form-label">Respiratory Rate</label>
-                                <input type="number" class="form-control" id="respRate" value="12">
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="peep" class="form-label">PEEP (cmH₂O)</label>
-                                <input type="number" class="form-control" id="peep" value="5" step="0.5">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="fio2" class="form-label">FiO₂ (%)</label>
-                                <input type="number" class="form-control" id="fio2" value="30" min="21" max="100">
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="flowRate" class="form-label">Flow Rate (L/min)</label>
-                                <input type="number" class="form-control" id="flowRate" value="55">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="triggerSensitivity" class="form-label">Trigger (L/min)</label>
-                                <input type="number" class="form-control" id="triggerSensitivity" value="3.0" step="0.5">
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="ieRatio" class="form-label">I:E Ratio</label>
-                            <input type="text" class="form-control" id="ieRatio" value="1:2">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Middle Column -->
-            <div class="col-md-4">
-                <!-- Ventilator Parameters Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-chart-line me-2"></i>Ventilator Parameters
-                    </div>
-                    <div class="card-body">
-                        <div class="parameter-card">
-                            <div class="d-flex justify-content-between">
-                                <span>Peak Pressure (Ppeak)</span>
-                                <span class="parameter-value">26 <small>cmH₂O</small></span>
-                            </div>
-                            <div class="alert-indicator alert-warning"></div>
-                            <small>Acceptable but monitor for trends</small>
-                        </div>
-                        
-                        <div class="parameter-card">
-                            <div class="d-flex justify-content-between">
-                                <span>Plateau Pressure</span>
-                                <span class="parameter-value">22 <small>cmH₂O</small></span>
-                            </div>
-                            <div class="alert-indicator alert-normal"></div>
-                            <small>Normal range (≤30 cmH₂O)</small>
-                        </div>
-                        
-                        <div class="parameter-card">
-                            <div class="d-flex justify-content-between">
-                                <span>Dynamic Compliance (Cdyn)</span>
-                                <span class="parameter-value">30 <small>mL/cmH₂O</small></span>
-                            </div>
-                            <div class="alert-indicator alert-warning"></div>
-                            <small>Borderline (normal ~50-100)</small>
-                        </div>
-                        
-                        <div class="parameter-card">
-                            <div class="d-flex justify-content-between">
-                                <span>Mean Airway Pressure</span>
-                                <span class="parameter-value">10 <small>cmH₂O</small></span>
-                            </div>
-                            <div class="alert-indicator alert-normal"></div>
-                            <small>Expected in VC mode</small>
-                        </div>
-                        
-                        <div class="parameter-card">
-                            <div class="d-flex justify-content-between">
-                                <span>Minute Ventilation</span>
-                                <span class="parameter-value">8.28 <small>L/min</small></span>
-                            </div>
-                            <div class="alert-indicator alert-normal"></div>
-                            <small>Normal for 50 kg patient</small>
-                        </div>
-                        
-                        <div class="parameter-card">
-                            <div class="d-flex justify-content-between">
-                                <span>Delivered Vt</span>
-                                <span class="parameter-value">342 <small>mL</small></span>
-                            </div>
-                            <div class="alert-indicator alert-normal"></div>
-                            <small>Close to target (350 mL)</small>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Clinical Suggestions Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-lightbulb me-2"></i>Clinical Suggestions
-                    </div>
-                    <div class="card-body">
-                        <div class="parameter-card suggestion-card">
-                            <div class="d-flex justify-content-between">
-                                <span><i class="fas fa-check-circle me-2 text-success"></i>FiO₂/PEEP</span>
-                            </div>
-                            <small>Current FiO₂ of 30% with PEEP 5 cmH₂O is appropriate. Consider weaning if oxygenation remains stable.</small>
-                        </div>
-                        
-                        <div class="parameter-card warning-card">
-                            <div class="d-flex justify-content-between">
-                                <span><i class="fas fa-exclamation-triangle me-2 text-warning"></i>Trigger Sensitivity</span>
-                            </div>
-                            <small>Trigger sensitivity of 3.0 L/min may delay triggering in weak patients. Consider decreasing to 1-2 L/min.</small>
-                        </div>
-                        
-                        <div class="parameter-card suggestion-card">
-                            <div class="d-flex justify-content-between">
-                                <span><i class="fas fa-check-circle me-2 text-success"></i>Tidal Volume</span>
-                            </div>
-                            <small>Delivered tidal volume of 342 mL (6.8 mL/kg) is appropriate for this patient's weight.</small>
-                        </div>
-                        
-                        <div class="parameter-card warning-card">
-                            <div class="d-flex justify-content-between">
-                                <span><i class="fas fa-exclamation-triangle me-2 text-warning"></i>Dynamic Compliance</span>
-                            </div>
-                            <small>Borderline compliance (30 mL/cmH₂O) suggests moderate lung stiffness. Monitor for improvement or deterioration.</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Right Column - Graphs -->
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-wave-square me-2"></i>Pressure vs Time
-                    </div>
-                    <div class="card-body">
-                        <div class="graph-container">
-                            <canvas id="pressureTimeChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-wind me-2"></i>Flow vs Time
-                    </div>
-                    <div class="card-body">
-                        <div class="graph-container">
-                            <canvas id="flowTimeChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-chart-area me-2"></i>Volume vs Time
-                    </div>
-                    <div class="card-body">
-                        <div class="graph-container">
-                            <canvas id="volumeTimeChart"></canvas>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
         
-        <!-- Bottom Row - Additional Graphs -->
-        <div class="row mt-3">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-project-diagram me-2"></i>Pressure-Volume Loop
-                    </div>
-                    <div class="card-body">
-                        <div class="graph-container" style="height: 300px;">
-                            <canvas id="pvLoopChart"></canvas>
+        <div class="container">
+            <!-- Ventilator Diagram Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="ventilator-schematic-card">
+                        <div class="ventilator-schematic-header">
+                            <i class="fas fa-wind me-2"></i>Ventilator Schematic
+                            <button id="toggleDiagram" class="btn btn-sm btn-light ms-auto">
+                                <i class="fas fa-chevron-up"></i>
+                            </button>
+                        </div>
+                        <div class="ventilator-schematic-body" id="diagramContainer">
+                            <div class="row g-0">
+                                <div class="col-lg-8">
+                                    <div class="diagram-container position-relative">
+                                        <svg id="ventilatorDiagram" width="100%" height="350" viewBox="0 0 800 450" style="background-color: #f8f9fa;" class="rounded">
+                                            <!-- Oxygen Tank -->
+                                            <g id="oxygenTank">
+                                                <rect x="80" y="170" width="50" height="140" rx="5" fill="#7ED957" stroke="#333" stroke-width="2"/>
+                                                <rect x="80" y="150" width="50" height="20" rx="3" fill="#D1D1D6" stroke="#333" stroke-width="2"/>
+                                                <circle cx="105" cy="160" r="8" fill="#333"/>
+                                                <text x="105" y="220" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">O₂</text>
+                                            </g>
+                                            
+                                            <!-- Air Circle -->
+                                            <g id="airCircle">
+                                                <circle cx="270" cy="100" r="40" fill="#fff" stroke="#4361ee" stroke-width="3"/>
+                                                <text x="270" y="105" text-anchor="middle" font-size="16" fill="#333" font-weight="bold">AIR</text>
+                                            </g>
+                                            
+                                            <!-- Buffer -->
+                                            <g id="buffer">
+                                                <ellipse cx="420" cy="100" rx="80" ry="50" fill="#f8f9fa" stroke="#7DD1E3" stroke-width="3"/>
+                                                <text x="420" y="105" text-anchor="middle" font-size="16" fill="#333">Buffer</text>
+                                            </g>
+                                            
+                                            <!-- Mechanical Paddle -->
+                                            <g id="paddleActuator">
+                                                <ellipse cx="420" cy="230" rx="70" ry="60" fill="rgba(142, 192, 239, 0.5)" stroke="#4361ee" stroke-width="2"/>
+                                                <rect x="400" y="190" width="40" height="80" rx="5" fill="#A9A9A9" stroke="#333" stroke-width="1"/>
+                                                <text x="420" y="220" text-anchor="middle" font-size="12" fill="#333" font-weight="bold">Mechanical</text>
+                                                <text x="420" y="235" text-anchor="middle" font-size="12" fill="#333" font-weight="bold">paddle</text>
+                                                <text x="420" y="250" text-anchor="middle" font-size="12" fill="#333" font-weight="bold">actuator</text>
+                                            </g>
+                                            
+                                            <!-- Step Motor -->
+                                            <g id="stepMotor">
+                                                <rect x="520" y="220" width="50" height="50" rx="5" fill="#A9A9A9" stroke="#333" stroke-width="2"/>
+                                                <circle cx="545" cy="245" r="15" fill="#8E8E93" stroke="#333"/>
+                                                <text x="545" y="295" text-anchor="middle" font-size="12" fill="#333">Step Motor</text>
+                                                <!-- Chain Drive -->
+                                                <line x1="460" y1="245" x2="520" y2="245" stroke="#333" stroke-width="2" stroke-dasharray="5,3"/>
+                                                <text x="490" y="235" text-anchor="middle" font-size="12" fill="#333">Chain drive</text>
+                                            </g>
+                                            
+                                            <!-- Power Control -->
+                                            <g id="powerControl">
+                                                <rect x="520" y="320" width="40" height="40" rx="5" fill="#FA5252" stroke="#333" stroke-width="1"/>
+                                                <line x1="525" y1="325" x2="555" y2="355" stroke="#fff" stroke-width="1"/>
+                                                <line x1="525" y1="355" x2="555" y2="325" stroke="#fff" stroke-width="1"/>
+                                                <text x="540" y="375" text-anchor="middle" font-size="12" fill="#333">Power control</text>
+                                            </g>
+                                            
+                                            <!-- Control Unit -->
+                                            <g id="controlUnit">
+                                                <rect x="400" y="350" width="60" height="50" rx="5" fill="#7DD1E3" stroke="#333" stroke-width="1"/>
+                                                <text x="430" y="375" text-anchor="middle" font-size="12" fill="#333">Control unit</text>
+                                                <!-- CPU elements -->
+                                                <line x1="410" y1="360" x2="450" y2="360" stroke="#333" stroke-width="1"/>
+                                                <line x1="410" y1="370" x2="450" y2="370" stroke="#333" stroke-width="1"/>
+                                                <line x1="410" y1="380" x2="450" y2="380" stroke="#333" stroke-width="1"/>
+                                            </g>
+                                            
+                                            <!-- UPS -->
+                                            <g id="ups">
+                                                <rect x="270" y="350" width="60" height="40" rx="5" fill="#fff" stroke="#FFA500" stroke-dasharray="5,2" stroke-width="2"/>
+                                                <text x="300" y="375" text-anchor="middle" font-size="14" fill="#333">UPS</text>
+                                            </g>
+                                            
+                                            <!-- Power Source -->
+                                            <g id="powerSource">
+                                                <rect x="200" y="350" width="40" height="40" rx="5" fill="#8E8E93" stroke="#333" stroke-width="1"/>
+                                                <text x="220" y="370" text-anchor="middle" font-size="12" fill="#fff">220</text>
+                                                <text x="220" y="383" text-anchor="middle" font-size="10" fill="#fff">VAC</text>
+                                                <!-- Power Plug -->
+                                                <path d="M180,370 L200,370" stroke="#F00" stroke-width="3"/>
+                                                <circle cx="175" cy="370" r="5" fill="#333"/>
+                                                <rect x="165" y="365" width="10" height="10" fill="#333"/>
+                                            </g>
+                                            
+                                            <!-- Battery -->
+                                            <g id="battery">
+                                                <rect x="250" y="350" width="30" height="40" rx="2" fill="#333" stroke="#333" stroke-width="1"/>
+                                                <rect x="257" y="345" width="16" height="5" rx="1" fill="#333"/>
+                                                <text x="265" y="370" text-anchor="middle" font-size="10" fill="#fff">12</text>
+                                                <text x="265" y="380" text-anchor="middle" font-size="8" fill="#fff">VDC</text>
+                                                <text x="265" y="395" text-anchor="middle" font-size="10" fill="#333">Battery</text>
+                                            </g>
+                                            
+                                            <!-- Patient -->
+                                            <g id="patient">
+                                                <path d="M700,170 Q740,170 740,220 Q740,270 700,280 Q680,290 690,310 Q700,330 680,350" fill="transparent" stroke="#333" stroke-width="2"/>
+                                                <circle cx="680" cy="150" r="30" fill="transparent" stroke="#333" stroke-width="2"/>
+                                                <path d="M670,140 Q680,130 690,140" fill="transparent" stroke="#333" stroke-width="1"/>
+                                                <ellipse cx="675" cy="150" rx="2" ry="4" fill="#333"/>
+                                                <ellipse cx="685" cy="150" rx="2" ry="4" fill="#333"/>
+                                                <path d="M685,320 Q675,340 665,320" fill="transparent" stroke="#333" stroke-width="2"/>
+                                                <path d="M680,325 Q665,355 650,325" fill="transparent" stroke="#333" stroke-width="2"/>
+                                            </g>
+                                            
+                                            <!-- Valve & Sensors -->
+                                            <g id="valveSensors">
+                                                <circle cx="620" cy="170" r="15" fill="#FFA500" stroke="#333" stroke-width="1"/>
+                                                <text x="620" y="150" text-anchor="middle" font-size="12" fill="#333">Valve</text>
+                                                <text x="620" y="162" text-anchor="middle" font-size="10" fill="#333">PEEP</text>
+                                                
+                                                <circle cx="570" cy="220" r="15" fill="#4361ee" stroke="#333" stroke-width="1"/>
+                                                <text x="570" y="205" text-anchor="middle" font-size="12" fill="#333">Sensor</text>
+                                                <text x="570" y="218" text-anchor="middle" font-size="10" fill="#333">Oxygen</text>
+                                                
+                                                <circle cx="650" cy="220" r="15" fill="#8E8E93" stroke="#333" stroke-width="1"/>
+                                                <text x="650" y="205" text-anchor="middle" font-size="12" fill="#333">Sensor</text>
+                                                <text x="650" y="218" text-anchor="middle" font-size="10" fill="#333">Flow</text>
+                                                
+                                                <rect x="680" cy="220" width="20" height="30" fill="#6937FF" stroke="#333" stroke-width="1"/>
+                                                <text x="690" y="205" text-anchor="middle" font-size="12" fill="#333">Filter</text>
+                                                <text x="690" y="218" text-anchor="middle" font-size="10" fill="#333">HEPA</text>
+                                            </g>
+                                            
+                                            <!-- Connecting Tubes -->
+                                            <g id="tubes" stroke-linecap="round">
+                                                <!-- O2 to Air mix -->
+                                                <path d="M130,170 C150,150 200,120 230,100" stroke="#7DD1E3" stroke-width="5" fill="none"/>
+                                                
+                                                <!-- Air to Mixer -->
+                                                <path d="M310,100 L350,100" stroke="#4361ee" stroke-width="5" fill="none"/>
+                                                
+                                                <!-- Buffer to Paddle -->
+                                                <path d="M420,150 L420,170" stroke="#7DD1E3" stroke-width="5" fill="none"/>
+                                                
+                                                <!-- Paddle to Output -->
+                                                <path d="M490,230 L520,230 C540,230 540,220 560,220" stroke="#4361ee" stroke-width="5" fill="none"/>
+                                                
+                                                <!-- Airway path to patient -->
+                                                <path d="M585,220 C600,220 610,220 620,220 C640,220 640,220 650,220 C660,220 670,220 680,220 C690,220 700,220 700,220" stroke="#4361ee" stroke-width="5" fill="none"/>
+                                                
+                                                <!-- Control connections -->
+                                                <path d="M540,320 L540,300 C540,280 500,280 460,280 C460,280 460,290 430,290" stroke="#333" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+                                                
+                                                <!-- Power connections -->
+                                                <path d="M240,350 L250,350" stroke="#F00" stroke-width="3" fill="none"/>
+                                                <path d="M330,360 C350,360 360,360 370,360 C380,360 390,360 400,360" stroke="#00F" stroke-width="3" fill="none"/>
+                                                <path d="M460,370 C490,370 500,350 520,340" stroke="#00F" stroke-width="3" fill="none"/>
+                                            </g>
+                                            
+                                            <!-- Animated Air Flow -->
+                                            <g id="airFlow">
+                                                <circle id="airParticle1" cx="200" cy="100" r="3" fill="#4361ee">
+                                                    <animate attributeName="cx" from="200" to="310" dur="2s" begin="0s" repeatCount="indefinite"/>
+                                                </circle>
+                                                <circle id="airParticle2" cx="200" cy="100" r="3" fill="#4361ee">
+                                                    <animate attributeName="cx" from="200" to="310" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+                                                </circle>
+                                                <circle id="airParticle3" cx="200" cy="100" r="3" fill="#4361ee">
+                                                    <animate attributeName="cx" from="200" to="310" dur="2s" begin="1s" repeatCount="indefinite"/>
+                                                </circle>
+                                                <circle id="airParticle4" cx="200" cy="100" r="3" fill="#4361ee">
+                                                    <animate attributeName="cx" from="200" to="310" dur="2s" begin="1.5s" repeatCount="indefinite"/>
+                                                </circle>
+                                            </g>
+                                            
+                                            <!-- Animated Oxygen Flow -->
+                                            <g id="oxygenFlow">
+                                                <circle id="o2Particle1" cx="130" cy="170" r="3" fill="#4CD964">
+                                                    <animateMotion path="M0,0 C20,-20 70,-50 100,-70" dur="2s" begin="0s" repeatCount="indefinite"/>
+                                                </circle>
+                                                <circle id="o2Particle2" cx="130" cy="170" r="3" fill="#4CD964">
+                                                    <animateMotion path="M0,0 C20,-20 70,-50 100,-70" dur="2s" begin="0.7s" repeatCount="indefinite"/>
+                                                </circle>
+                                                <circle id="o2Particle3" cx="130" cy="170" r="3" fill="#4CD964">
+                                                    <animateMotion path="M0,0 C20,-20 70,-50 100,-70" dur="2s" begin="1.4s" repeatCount="indefinite"/>
+                                                </circle>
+                                            </g>
+                                            
+                                            <!-- Animated Paddle Movement -->
+                                            <g id="paddleAnimation">
+                                                <rect id="paddle" x="410" y="210" width="20" height="40" rx="3" fill="#666">
+                                                    <animate attributeName="x" values="410;415;410;405;410" dur="1.5s" repeatCount="indefinite"/>
+                                                </rect>
+                                            </g>
+                                            
+                                            <!-- Animated Output Flow -->
+                                            <g id="outputFlow">
+                                                <circle id="outputParticle1" cx="520" cy="230" r="3" fill="#4361ee">
+                                                    <animateMotion path="M0,0 C20,0 30,-10 40,-10 C60,-10 60,-10 70,-10 C80,-10 90,-10 100,-10 C110,-10 130,-10 180,-10" dur="3s" begin="0s" repeatCount="indefinite"/>
+                                                </circle>
+                                                <circle id="outputParticle2" cx="520" cy="230" r="3" fill="#4361ee">
+                                                    <animateMotion path="M0,0 C20,0 30,-10 40,-10 C60,-10 60,-10 70,-10 C80,-10 90,-10 100,-10 C110,-10 130,-10 180,-10" dur="3s" begin="1s" repeatCount="indefinite"/>
+                                                </circle>
+                                                <circle id="outputParticle3" cx="520" cy="230" r="3" fill="#4361ee">
+                                                    <animateMotion path="M0,0 C20,0 30,-10 40,-10 C60,-10 60,-10 70,-10 C80,-10 90,-10 100,-10 C110,-10 130,-10 180,-10" dur="3s" begin="2s" repeatCount="indefinite"/>
+                                                </circle>
+                                            </g>
+                                        </svg>
+                                        <div class="overlay-container position-absolute top-0 start-0 w-100 h-100">
+                                            <!-- Interactive hotspots will be added via JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="component-details-section" id="componentDetails">
+                                        <h4 class="mb-3">Component Details</h4>
+                                        <p>Click on a component in the diagram to see details.</p>
+                                        <div class="d-flex flex-column align-items-center justify-content-center flex-grow-1">
+                                            <i class="fas fa-hand-pointer fa-3x mb-3 text-secondary opacity-50"></i>
+                                            <p class="text-muted text-center">Interactive diagram - select components to learn more</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-project-diagram me-2"></i>Flow-Volume Loop
+            
+            <div class="row g-4">
+                <!-- Left Column -->
+                <div class="col-lg-4 col-md-6">
+                    <!-- Patient Data Card -->
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <i class="fas fa-user-alt me-2"></i>Patient Data
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="mb-3">
+                                <label for="patientWeight" class="form-label fw-medium">Weight (kg)</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="patientWeight" value="50">
+                                    <span class="input-group-text"><i class="fas fa-weight"></i></span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="patientCondition" class="form-label fw-medium">Condition</label>
+                                <div class="input-group">
+                                    <select class="form-select" id="patientCondition">
+                                        <option value="normal">Normal</option>
+                                        <option value="ards">ARDS</option>
+                                        <option value="copd">COPD</option>
+                                        <option value="postop">Post-operative</option>
+                                        <option value="neuro">Neuromuscular</option>
+                                    </select>
+                                    <span class="input-group-text"><i class="fas fa-clipboard-list"></i></span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="idealVt" class="form-label fw-medium">Ideal Vt (mL/kg)</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="idealVt" value="7" min="4" max="8">
+                                    <span class="input-group-text"><i class="fas fa-lungs"></i></span>
+                                </div>
+                                <small class="text-muted fst-italic">ARDS: 4-6, Normal: 6-8</small>
+                            </div>
+                            <button id="calculateVt" class="btn btn-primary w-100 mt-2">
+                                <i class="fas fa-calculator me-2"></i>Calculate Ideal Vt
+                            </button>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="graph-container" style="height: 300px;">
-                            <canvas id="fvLoopChart"></canvas>
+                    
+                    <!-- Ventilator Settings Card -->
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <i class="fas fa-cog me-2"></i>Ventilator Settings
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="mode-selector mb-4">
+                                <label for="ventMode" class="form-label text-white mb-2">Ventilation Mode</label>
+                                <select class="form-select" id="ventMode">
+                                    <option value="vc_ac">Volume Control A/C</option>
+                                    <option value="pc_ac">Pressure Control A/C</option>
+                                    <option value="simv_vc">SIMV Volume Control</option>
+                                    <option value="simv_pc">SIMV Pressure Control</option>
+                                    <option value="psv">Pressure Support</option>
+                                </select>
+                            </div>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6 mb-3">
+                                    <label for="tidalVolume" class="form-label fw-medium">Tidal Volume (mL)</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="tidalVolume" value="350">
+                                        <span class="input-group-text">mL</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="respRate" class="form-label fw-medium">Respiratory Rate</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="respRate" value="12">
+                                        <span class="input-group-text">bpm</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6 mb-3">
+                                    <label for="peep" class="form-label fw-medium">PEEP</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="peep" value="5" step="0.5">
+                                        <span class="input-group-text">cmH₂O</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="fio2" class="form-label fw-medium">FiO₂</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="fio2" value="30" min="21" max="100">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6 mb-3">
+                                    <label for="flowRate" class="form-label fw-medium">Flow Rate</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="flowRate" value="55">
+                                        <span class="input-group-text">L/min</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="triggerSensitivity" class="form-label fw-medium">Trigger</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="triggerSensitivity" value="3.0" step="0.5">
+                                        <span class="input-group-text">L/min</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="ieRatio" class="form-label fw-medium">I:E Ratio</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="ieRatio" value="1:2">
+                                    <span class="input-group-text"><i class="fas fa-sync-alt"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Middle Column -->
+                <div class="col-lg-4 col-md-6">
+                    <!-- Ventilator Parameters Card -->
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <i class="fas fa-chart-line me-2"></i>Ventilator Parameters
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="parameter-card">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-medium">Peak Pressure (Ppeak)</span>
+                                    <span class="parameter-value">26 <small class="text-muted">cmH₂O</small></span>
+                                </div>
+                                <div class="progress mb-2" style="height: 8px;">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 65%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div><span class="alert-indicator alert-warning"></span><small>Acceptable but monitor for trends</small></div>
+                            </div>
+                            
+                            <div class="parameter-card">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-medium">Plateau Pressure</span>
+                                    <span class="parameter-value">22 <small class="text-muted">cmH₂O</small></span>
+                                </div>
+                                <div class="progress mb-2" style="height: 8px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 45%;" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div><span class="alert-indicator alert-normal"></span><small>Normal range (≤30 cmH₂O)</small></div>
+                            </div>
+                            
+                            <div class="parameter-card">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-medium">Dynamic Compliance (Cdyn)</span>
+                                    <span class="parameter-value">30 <small class="text-muted">mL/cmH₂O</small></span>
+                                </div>
+                                <div class="progress mb-2" style="height: 8px;">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div><span class="alert-indicator alert-warning"></span><small>Borderline (normal ~50-100)</small></div>
+                            </div>
+                            
+                            <div class="parameter-card">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-medium">Mean Airway Pressure</span>
+                                    <span class="parameter-value">10 <small class="text-muted">cmH₂O</small></span>
+                                </div>
+                                <div class="progress mb-2" style="height: 8px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 38%;" aria-valuenow="38" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div><span class="alert-indicator alert-normal"></span><small>Expected in VC mode</small></div>
+                            </div>
+                            
+                            <div class="parameter-card">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-medium">Minute Ventilation</span>
+                                    <span class="parameter-value">8.28 <small class="text-muted">L/min</small></span>
+                                </div>
+                                <div class="progress mb-2" style="height: 8px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 42%;" aria-valuenow="42" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div><span class="alert-indicator alert-normal"></span><small>Normal for 50 kg patient</small></div>
+                            </div>
+                            
+                            <div class="parameter-card">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-medium">Delivered Vt</span>
+                                    <span class="parameter-value">342 <small class="text-muted">mL</small></span>
+                                </div>
+                                <div class="progress mb-2" style="height: 8px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 48%;" aria-valuenow="48" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div><span class="alert-indicator alert-normal"></span><small>Close to target (350 mL)</small></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Clinical Suggestions Card -->
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <i class="fas fa-lightbulb me-2"></i>Clinical Suggestions
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="parameter-card suggestion-card">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <i class="fas fa-check-circle text-success fa-2x"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1 fw-medium">FiO₂/PEEP</h6>
+                                        <p class="mb-0 small">Current FiO₂ of 30% with PEEP 5 cmH₂O is appropriate. Consider weaning if oxygenation remains stable.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="parameter-card warning-card">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <i class="fas fa-exclamation-triangle text-warning fa-2x"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1 fw-medium">Trigger Sensitivity</h6>
+                                        <p class="mb-0 small">Trigger sensitivity of 3.0 L/min may delay triggering in weak patients. Consider decreasing to 1-2 L/min.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="parameter-card suggestion-card">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <i class="fas fa-check-circle text-success fa-2x"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1 fw-medium">Tidal Volume</h6>
+                                        <p class="mb-0 small">Delivered tidal volume of 342 mL (6.8 mL/kg) is appropriate for this patient's weight.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="parameter-card warning-card">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <i class="fas fa-exclamation-triangle text-warning fa-2x"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1 fw-medium">Dynamic Compliance</h6>
+                                        <p class="mb-0 small">Borderline compliance (30 mL/cmH₂O) suggests moderate lung stiffness. Monitor for improvement or deterioration.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column - Graphs -->
+                <div class="col-lg-4 col-md-12">
+                    <div class="row g-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header d-flex align-items-center">
+                                    <i class="fas fa-wave-square me-2"></i>Pressure vs Time
+                                </div>
+                                <div class="card-body p-3">
+                                    <div class="graph-container">
+                                        <canvas id="pressureTimeChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header d-flex align-items-center">
+                                    <i class="fas fa-wind me-2"></i>Flow vs Time
+                                </div>
+                                <div class="card-body p-3">
+                                    <div class="graph-container">
+                                        <canvas id="flowTimeChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header d-flex align-items-center">
+                                    <i class="fas fa-chart-area me-2"></i>Volume vs Time
+                                </div>
+                                <div class="card-body p-3">
+                                    <div class="graph-container">
+                                        <canvas id="volumeTimeChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Row - Additional Graphs -->
+            <div class="row mt-4 g-4">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <i class="fas fa-project-diagram me-2"></i>Pressure-Volume Loop
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="graph-container" style="height: 300px;">
+                                <canvas id="pvLoopChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <i class="fas fa-project-diagram me-2"></i>Flow-Volume Loop
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="graph-container" style="height: 300px;">
+                                <canvas id="fvLoopChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="row mt-4 mb-5">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <i class="fas fa-bolt me-2"></i>Quick Actions
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="row g-3">
+                                <div class="col-md-3 col-6">
+                                    <button class="btn btn-outline-primary w-100 h-100 py-3 quick-action-btn">
+                                        <i class="fas fa-file-pdf fa-2x mb-2"></i><br>
+                                        Export Report
+                                    </button>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <button class="btn btn-outline-success w-100 h-100 py-3 quick-action-btn">
+                                        <i class="fas fa-sync-alt fa-2x mb-2"></i><br>
+                                        Refresh Data
+                                    </button>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <button class="btn btn-outline-warning w-100 h-100 py-3 quick-action-btn">
+                                        <i class="fas fa-bell fa-2x mb-2"></i><br>
+                                        Manage Alerts
+                                    </button>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <button class="btn btn-outline-info w-100 h-100 py-3 quick-action-btn">
+                                        <i class="fas fa-question-circle fa-2x mb-2"></i><br>
+                                        Help Guide
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -393,51 +1436,1008 @@
     </div>
 
     <script>
-        // Dark mode toggle
-        document.getElementById('darkModeToggle').addEventListener('click', function() {
-            document.body.classList.toggle('dark-mode');
-            if (document.body.classList.contains('dark-mode')) {
-                this.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-            } else {
-                this.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+        // Language translations
+        const translations = {
+            en: {
+                appTitle: "Ventilator Assistant",
+                appSubtitle: "Clinical decision support for mechanical ventilation management",
+                darkMode: "Dark Mode",
+                lightMode: "Light Mode",
+                ventilatorSchematic: "Ventilator Schematic",
+                patientData: "Patient Data",
+                weight: "Weight (kg)",
+                condition: "Condition",
+                idealVt: "Ideal Vt (mL/kg)",
+                calculateIdealVt: "Calculate Ideal Vt",
+                ventilatorSettings: "Ventilator Settings",
+                ventilationMode: "Ventilation Mode",
+                tidalVolume: "Tidal Volume (mL)",
+                respiratoryRate: "Respiratory Rate",
+                peep: "PEEP",
+                fio2: "FiO₂",
+                flowRate: "Flow Rate",
+                trigger: "Trigger",
+                ieRatio: "I:E Ratio",
+                ventilatorParameters: "Ventilator Parameters",
+                peakPressure: "Peak Pressure (Ppeak)",
+                plateauPressure: "Plateau Pressure",
+                dynamicCompliance: "Dynamic Compliance (Cdyn)",
+                meanAirwayPressure: "Mean Airway Pressure",
+                minuteVentilation: "Minute Ventilation",
+                deliveredVt: "Delivered Vt",
+                clinicalSuggestions: "Clinical Suggestions",
+                quickActions: "Quick Actions",
+                exportReport: "Export Report",
+                refreshData: "Refresh Data",
+                manageAlerts: "Manage Alerts",
+                helpGuide: "Help Guide",
+                componentDetails: "Component Details",
+                clickComponent: "Click on a component in the diagram to see details"
+            },
+            es: {
+                appTitle: "Asistente de Ventilador",
+                appSubtitle: "Soporte de decisiones clínicas para manejo de ventilación mecánica",
+                darkMode: "Modo Oscuro",
+                lightMode: "Modo Claro",
+                ventilatorSchematic: "Esquema del Ventilador",
+                patientData: "Datos del Paciente",
+                weight: "Peso (kg)",
+                condition: "Condición",
+                idealVt: "Vt Ideal (mL/kg)",
+                calculateIdealVt: "Calcular Vt Ideal",
+                ventilatorSettings: "Configuración del Ventilador",
+                ventilationMode: "Modo de Ventilación",
+                tidalVolume: "Volumen Tidal (mL)",
+                respiratoryRate: "Frecuencia Respiratoria",
+                peep: "PEEP",
+                fio2: "FiO₂",
+                flowRate: "Flujo",
+                trigger: "Disparo",
+                ieRatio: "Relación I:E",
+                ventilatorParameters: "Parámetros del Ventilador",
+                peakPressure: "Presión Pico (Ppico)",
+                plateauPressure: "Presión Meseta",
+                dynamicCompliance: "Distensibilidad Dinámica (Cdyn)",
+                meanAirwayPressure: "Presión Media en Vía Aérea",
+                minuteVentilation: "Ventilación Minuto",
+                deliveredVt: "Vt Entregado",
+                clinicalSuggestions: "Sugerencias Clínicas",
+                quickActions: "Acciones Rápidas",
+                exportReport: "Exportar Informe",
+                refreshData: "Actualizar Datos",
+                manageAlerts: "Gestionar Alertas",
+                helpGuide: "Guía de Ayuda",
+                componentDetails: "Detalles del Componente",
+                clickComponent: "Haga clic en un componente del diagrama para ver detalles"
+            },
+            fr: {
+                appTitle: "Assistant Ventilateur",
+                appSubtitle: "Aide à la décision clinique pour la gestion de la ventilation mécanique",
+                darkMode: "Mode Sombre",
+                lightMode: "Mode Clair",
+                ventilatorSchematic: "Schéma du Ventilateur",
+                patientData: "Données Patient",
+                weight: "Poids (kg)",
+                condition: "État",
+                idealVt: "Vt Idéal (mL/kg)",
+                calculateIdealVt: "Calculer Vt Idéal",
+                ventilatorSettings: "Réglages du Ventilateur",
+                ventilationMode: "Mode de Ventilation",
+                tidalVolume: "Volume Courant (mL)",
+                respiratoryRate: "Fréquence Respiratoire",
+                peep: "PEP",
+                fio2: "FiO₂",
+                flowRate: "Débit",
+                trigger: "Déclenchement",
+                ieRatio: "Rapport I:E",
+                ventilatorParameters: "Paramètres du Ventilateur",
+                peakPressure: "Pression de Crête (Ppic)",
+                plateauPressure: "Pression Plateau",
+                dynamicCompliance: "Compliance Dynamique (Cdyn)",
+                meanAirwayPressure: "Pression Moyenne des Voies Aériennes",
+                minuteVentilation: "Ventilation Minute",
+                deliveredVt: "Vt Délivré",
+                clinicalSuggestions: "Suggestions Cliniques",
+                quickActions: "Actions Rapides",
+                exportReport: "Exporter Rapport",
+                refreshData: "Actualiser Données",
+                manageAlerts: "Gérer Alertes",
+                helpGuide: "Guide d'Aide",
+                componentDetails: "Détails du Composant",
+                clickComponent: "Cliquez sur un composant du schéma pour voir les détails"
+            },
+            de: {
+                appTitle: "Beatmungsassistent",
+                appSubtitle: "Klinische Entscheidungshilfe für das Management der mechanischen Beatmung",
+                darkMode: "Dunkler Modus",
+                lightMode: "Heller Modus",
+                ventilatorSchematic: "Beatmungsgerät Schema",
+                patientData: "Patientendaten",
+                weight: "Gewicht (kg)",
+                condition: "Zustand",
+                idealVt: "Ideales Vt (mL/kg)",
+                calculateIdealVt: "Ideales Vt berechnen",
+                ventilatorSettings: "Beatmungseinstellungen",
+                ventilationMode: "Beatmungsmodus",
+                tidalVolume: "Atemzugvolumen (mL)",
+                respiratoryRate: "Atemfrequenz",
+                peep: "PEEP",
+                fio2: "FiO₂",
+                flowRate: "Flussrate",
+                trigger: "Trigger",
+                ieRatio: "I:E Verhältnis",
+                ventilatorParameters: "Beatmungsparameter",
+                peakPressure: "Spitzendruck (Pspitze)",
+                plateauPressure: "Plateaudruck",
+                dynamicCompliance: "Dynamische Compliance (Cdyn)",
+                meanAirwayPressure: "Mittlerer Atemwegsdruck",
+                minuteVentilation: "Atemminutenvolumen",
+                deliveredVt: "Geliefertes Vt",
+                clinicalSuggestions: "Klinische Vorschläge",
+                quickActions: "Schnellaktionen",
+                exportReport: "Bericht exportieren",
+                refreshData: "Daten aktualisieren",
+                manageAlerts: "Warnungen verwalten",
+                helpGuide: "Hilfeleitfaden",
+                componentDetails: "Komponentendetails",
+                clickComponent: "Klicken Sie auf eine Komponente im Diagramm, um Details zu sehen"
+            },
+            zh: {
+                appTitle: "呼吸机助手",
+                appSubtitle: "机械通气管理的临床决策支持",
+                darkMode: "深色模式",
+                lightMode: "浅色模式",
+                ventilatorSchematic: "呼吸机示意图",
+                patientData: "患者数据",
+                weight: "体重 (kg)",
+                condition: "状况",
+                idealVt: "理想潮气量 (mL/kg)",
+                calculateIdealVt: "计算理想潮气量",
+                ventilatorSettings: "呼吸机设置",
+                ventilationMode: "通气模式",
+                tidalVolume: "潮气量 (mL)",
+                respiratoryRate: "呼吸频率",
+                peep: "呼气末正压",
+                fio2: "吸入氧浓度",
+                flowRate: "流速",
+                trigger: "触发灵敏度",
+                ieRatio: "吸呼比",
+                ventilatorParameters: "呼吸机参数",
+                peakPressure: "峰值压力",
+                plateauPressure: "平台压力",
+                dynamicCompliance: "动态顺应性",
+                meanAirwayPressure: "平均气道压力",
+                minuteVentilation: "分钟通气量",
+                deliveredVt: "实际潮气量",
+                clinicalSuggestions: "临床建议",
+                quickActions: "快速操作",
+                exportReport: "导出报告",
+                refreshData: "刷新数据",
+                manageAlerts: "管理警报",
+                helpGuide: "帮助指南",
+                componentDetails: "组件详情",
+                clickComponent: "点击图表中的组件查看详情"
+            }
+        };
+        
+        // Initialize charts object
+        const charts = {};
+
+        // Dark mode toggle with localStorage to remember preference
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if Bootstrap is available
+            if (typeof bootstrap === 'undefined') {
+                console.warn('Bootstrap JavaScript not loaded. Some functionality may be limited.');
+            }
+            
+            // Check if user has a saved preference for theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('darkModeToggle').innerHTML = '<i class="fas fa-sun me-2"></i>Light Mode';
+            }
+            
+            // Toggle dark mode
+            document.getElementById('darkModeToggle').addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                
+                if (document.body.classList.contains('dark-mode')) {
+                    this.innerHTML = '<i class="fas fa-sun me-2"></i>' + getCurrentTranslation('lightMode');
+                    localStorage.setItem('theme', 'dark');
+                    // Update chart themes
+                    updateChartsForDarkMode(true);
+                } else {
+                    this.innerHTML = '<i class="fas fa-moon me-2"></i>' + getCurrentTranslation('darkMode');
+                    localStorage.setItem('theme', 'light');
+                    // Update chart themes
+                    updateChartsForDarkMode(false);
+                }
+            });
+            
+            // Initial chart theme based on mode
+            if (savedTheme === 'dark') {
+                updateChartsForDarkMode(true);
+            }
+            
+            // Theme selector
+            const themeSelector = document.getElementById('themeSelector');
+            if (themeSelector) {
+                // Apply saved theme if exists
+                const savedColorTheme = localStorage.getItem('colorTheme') || 'theme-blue';
+                document.body.className = document.body.className
+                    .replace(/theme-\w+/g, '')
+                    .trim() + ' ' + savedColorTheme;
+                
+                // Select the right option
+                for (let i = 0; i < themeSelector.options.length; i++) {
+                    if (themeSelector.options[i].value === savedColorTheme) {
+                        themeSelector.selectedIndex = i;
+                        break;
+                    }
+                }
+                
+                themeSelector.addEventListener('change', function() {
+                    // Remove all theme classes and add selected one
+                    document.body.className = document.body.className
+                        .replace(/theme-\w+/g, '')
+                        .trim() + ' ' + this.value;
+                    
+                    localStorage.setItem('colorTheme', this.value);
+                    
+                    // Preserve dark mode if active
+                    if (localStorage.getItem('theme') === 'dark') {
+                        document.body.classList.add('dark-mode');
+                    }
+                    
+                    // Update charts for new theme
+                    updateChartsForNewTheme();
+                });
+            }
+            
+            // Language selector
+            const languageSelector = document.getElementById('languageSelector');
+            if (languageSelector) {
+                // Apply saved language if exists
+                const savedLanguage = localStorage.getItem('language') || 'en';
+                
+                // Select the right option
+                for (let i = 0; i < languageSelector.options.length; i++) {
+                    if (languageSelector.options[i].value === savedLanguage) {
+                        languageSelector.selectedIndex = i;
+                        break;
+                    }
+                }
+                
+                // Apply translations for the saved language
+                applyTranslations(savedLanguage);
+                
+                languageSelector.addEventListener('change', function() {
+                    const selectedLanguage = this.value;
+                    localStorage.setItem('language', selectedLanguage);
+                    applyTranslations(selectedLanguage);
+                });
+            }
+            
+            // Initialize tooltips if Bootstrap is available
+            if (typeof bootstrap !== 'undefined') {
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.map(function(tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            }
+            
+            // Initialize charts
+            initializeCharts();
+            
+            // Setup Quick Action buttons
+            setupQuickActions();
+            
+            // Simulate real-time updates
+            setInterval(() => {
+                updateRealTimeData();
+            }, 100);
+        });
+
+        // Function to apply translations
+        function applyTranslations(language) {
+            if (!translations[language]) {
+                console.warn(`Translations for language "${language}" not found.`);
+                return;
+            }
+            
+            const elements = [
+                { selector: '.app-title', key: 'appTitle' },
+                { selector: '.app-subtitle', key: 'appSubtitle' },
+                { selector: '#darkModeToggle', key: document.body.classList.contains('dark-mode') ? 'lightMode' : 'darkMode' },
+                { selector: '.ventilator-schematic-header', key: 'ventilatorSchematic', startsWith: true },
+                { selector: '.card-header', key: 'patientData', contains: 'Patient Data' },
+                { selector: '.card-header', key: 'ventilatorSettings', contains: 'Ventilator Settings' },
+                { selector: '.card-header', key: 'ventilatorParameters', contains: 'Ventilator Parameters' },
+                { selector: '.card-header', key: 'clinicalSuggestions', contains: 'Clinical Suggestions' },
+                { selector: '.card-header', key: 'quickActions', contains: 'Quick Actions' },
+                { selector: 'label[for="patientWeight"]', key: 'weight' },
+                { selector: 'label[for="patientCondition"]', key: 'condition' },
+                { selector: 'label[for="idealVt"]', key: 'idealVt' },
+                { selector: '#calculateVt', key: 'calculateIdealVt' },
+                { selector: 'label[for="ventMode"]', key: 'ventilationMode' },
+                { selector: 'label[for="tidalVolume"]', key: 'tidalVolume' },
+                { selector: 'label[for="respRate"]', key: 'respiratoryRate' },
+                { selector: 'label[for="peep"]', key: 'peep' },
+                { selector: 'label[for="fio2"]', key: 'fio2' },
+                { selector: 'label[for="flowRate"]', key: 'flowRate' },
+                { selector: 'label[for="triggerSensitivity"]', key: 'trigger' },
+                { selector: 'label[for="ieRatio"]', key: 'ieRatio' },
+                { selector: '#componentDetails h4', key: 'componentDetails' },
+                { selector: '#componentDetails p:first-of-type', key: 'clickComponent' }
+            ];
+            
+            elements.forEach(element => {
+                const nodes = document.querySelectorAll(element.selector);
+                nodes.forEach(node => {
+                    if (element.contains && !node.textContent.includes(element.contains)) return;
+                    if (element.startsWith && !node.textContent.trim().startsWith(element.key)) return;
+                    
+                    // Special case for darkModeToggle which includes an icon
+                    if (element.selector === '#darkModeToggle') {
+                        const icon = node.querySelector('i');
+                        if (icon) {
+                            node.innerHTML = '';
+                            node.appendChild(icon);
+                            node.innerHTML += ' ' + translations[language][element.key];
+                        }
+                    } else {
+                        node.textContent = translations[language][element.key];
+                    }
+                });
+            });
+            
+            // Update specific parameter translations
+            const parameterLabels = {
+                'Peak Pressure (Ppeak)': 'peakPressure',
+                'Plateau Pressure': 'plateauPressure',
+                'Dynamic Compliance (Cdyn)': 'dynamicCompliance',
+                'Mean Airway Pressure': 'meanAirwayPressure',
+                'Minute Ventilation': 'minuteVentilation',
+                'Delivered Vt': 'deliveredVt'
+            };
+            
+            const parameterCards = document.querySelectorAll('.parameter-card');
+            parameterCards.forEach(card => {
+                const nameElement = card.querySelector('span:first-child');
+                if (nameElement) {
+                    for (const [originalText, translationKey] of Object.entries(parameterLabels)) {
+                        if (nameElement.textContent.includes(originalText)) {
+                            nameElement.textContent = translations[language][translationKey];
+                            break;
+                        }
+                    }
+                }
+            });
+            
+            // Update quick action buttons
+            const actionButtonLabels = {
+                'Export Report': 'exportReport',
+                'Refresh Data': 'refreshData',
+                'Manage Alerts': 'manageAlerts',
+                'Help Guide': 'helpGuide'
+            };
+            
+            const actionButtons = document.querySelectorAll('.btn-outline-primary, .btn-outline-success, .btn-outline-warning, .btn-outline-info');
+            actionButtons.forEach(button => {
+                const buttonText = button.textContent.trim();
+                for (const [originalText, translationKey] of Object.entries(actionButtonLabels)) {
+                    if (buttonText.includes(originalText)) {
+                        const icon = button.querySelector('i');
+                        if (icon) {
+                            const iconHTML = icon.outerHTML;
+                            button.innerHTML = iconHTML + '<br>' + translations[language][translationKey];
+                        }
+                        break;
+                    }
+                }
+            });
+        }
+        
+        // Helper function to get current translation based on selected language
+        function getCurrentTranslation(key) {
+            const language = localStorage.getItem('language') || 'en';
+            return translations[language][key] || translations['en'][key];
+        }
+        
+        // Function to update charts for dark mode
+        function updateChartsForDarkMode(isDarkMode) {
+            // Check if charts object exists
+            if (Object.keys(charts).length === 0) {
+                console.warn('Charts not initialized. Cannot update chart themes.');
+                return;
+            }
+            
+            // Common chart options for dark/light mode
+            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const textColor = isDarkMode ? '#fff' : '#666';
+            
+            // Function to update common chart options
+            const updateChartOptions = (chart) => {
+                if (!chart) return;
+                
+                // Update grid lines
+                if (chart.options.scales.x) {
+                    chart.options.scales.x.grid.color = gridColor;
+                    chart.options.scales.x.ticks.color = textColor;
+                }
+                
+                if (chart.options.scales.y) {
+                    chart.options.scales.y.grid.color = gridColor;
+                    chart.options.scales.y.ticks.color = textColor;
+                }
+                
+                // Update title and legend
+                if (chart.options.plugins && chart.options.plugins.title) {
+                    chart.options.plugins.title.color = textColor;
+                }
+                
+                if (chart.options.plugins && chart.options.plugins.legend) {
+                    chart.options.plugins.legend.labels.color = textColor;
+                }
+                
+                chart.update();
+            };
+            
+            // Update all charts
+            Object.values(charts).forEach(updateChartOptions);
+        }
+        
+        // Function to update charts for new theme
+        function updateChartsForNewTheme() {
+            // Get computed style variables
+            const primaryColor = getComputedStyle(document.body).getPropertyValue('--primary-color').trim();
+            const secondaryColor = getComputedStyle(document.body).getPropertyValue('--secondary-color').trim();
+            const warningColor = getComputedStyle(document.body).getPropertyValue('--warning-color').trim();
+            
+            // Check if charts object exists
+            if (typeof charts === 'undefined') {
+                console.warn('Charts object not found. Cannot update chart themes.');
+                return;
+            }
+            
+            // Update chart colors
+            if (charts.pressureTime) {
+                charts.pressureTime.data.datasets[0].borderColor = primaryColor;
+                charts.pressureTime.data.datasets[0].backgroundColor = hexToRgba(primaryColor, 0.2);
+                charts.pressureTime.update();
+            }
+            
+            if (charts.flowTime) {
+                charts.flowTime.data.datasets[0].borderColor = secondaryColor;
+                charts.flowTime.data.datasets[0].backgroundColor = hexToRgba(secondaryColor, 0.2);
+                charts.flowTime.update();
+            }
+            
+            if (charts.volumeTime) {
+                charts.volumeTime.data.datasets[0].borderColor = warningColor;
+                charts.volumeTime.data.datasets[0].backgroundColor = hexToRgba(warningColor, 0.2);
+                charts.volumeTime.update();
+            }
+            
+            if (charts.pvLoop) {
+                charts.pvLoop.data.datasets[0].borderColor = primaryColor;
+                charts.pvLoop.update();
+            }
+            
+            if (charts.fvLoop) {
+                charts.fvLoop.data.datasets[0].borderColor = secondaryColor;
+                charts.fvLoop.update();
+            }
+        }
+        
+        // Helper function to convert hex to rgba
+        function hexToRgba(hex, alpha = 1) {
+            // Remove the hash if it exists
+            hex = hex.replace('#', '');
+            
+            // Parse the hex values
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            
+            // Return the rgba value
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+        
+        // Ventilator diagram interaction
+        document.addEventListener('DOMContentLoaded', function() {
+            // Component data
+            const ventilatorComponents = [
+                {
+                    id: 'oxygen-source',
+                    name: 'Oxygen Source',
+                    position: { x: 13, y: 24 },
+                    svgElement: 'oxygenTank',
+                    icon: 'fas fa-flask',
+                    description: 'The source of enriched oxygen supplied to the ventilator system.',
+                    function: 'Provides oxygen concentration higher than room air to support patient oxygenation needs.'
+                },
+                {
+                    id: 'air-source',
+                    name: 'Air Source',
+                    position: { x: 35, y: 22 },
+                    svgElement: 'airCircle',
+                    icon: 'fas fa-wind',
+                    description: 'Room air intake for the ventilator system.',
+                    function: 'Provides ambient air that mixes with oxygen to create the desired FiO2 (Fraction of inspired oxygen).'
+                },
+                {
+                    id: 'buffer',
+                    name: 'Air Buffer',
+                    position: { x: 55, y: 22 },
+                    svgElement: 'buffer',
+                    icon: 'fas fa-database',
+                    description: 'Temporary storage for pressurized gases within the ventilator system.',
+                    function: 'Ensures consistent gas flow even during changing pressure demands from patient inspiration.'
+                },
+                {
+                    id: 'mechanical-paddle',
+                    name: 'Mechanical Paddle Actuator',
+                    position: { x: 55, y: 50 },
+                    svgElement: 'paddleActuator',
+                    icon: 'fas fa-cogs',
+                    description: 'Mechanical system that creates pressure for delivering breaths.',
+                    function: 'Generates the mechanical force that translates into air pressure to deliver respiratory support.'
+                },
+                {
+                    id: 'step-motor',
+                    name: 'Step Motor',
+                    position: { x: 68, y: 54 },
+                    svgElement: 'stepMotor',
+                    icon: 'fas fa-cog',
+                    description: 'Precise electric motor that controls mechanical movement of the ventilator.',
+                    function: 'Provides accurate and controlled movement to the mechanical paddle actuator.'
+                },
+                {
+                    id: 'peep-valve',
+                    name: 'PEEP Valve',
+                    position: { x: 78, y: 38 },
+                    svgElement: 'valveSensors',
+                    icon: 'fas fa-faucet',
+                    description: 'Valve that maintains positive end-expiratory pressure.',
+                    function: 'Prevents complete lung deflation by maintaining positive pressure at the end of exhalation.'
+                },
+                {
+                    id: 'flow-sensor',
+                    name: 'Flow & Oxygen Sensors',
+                    position: { x: 80, y: 50 },
+                    svgElement: 'valveSensors',
+                    icon: 'fas fa-tachometer-alt',
+                    description: 'Sensors that measure gas flow and oxygen concentration.',
+                    function: 'Monitors flow rates and oxygen levels to ensure proper ventilation and oxygenation.'
+                },
+                {
+                    id: 'filter',
+                    name: 'HEPA Filter',
+                    position: { x: 85, y: 49 },
+                    svgElement: 'valveSensors',
+                    icon: 'fas fa-filter',
+                    description: 'High-efficiency particulate air filter.',
+                    function: 'Prevents contaminants from entering the patient circuit and helps prevent infection.'
+                },
+                {
+                    id: 'patient-connection',
+                    name: 'Patient Connection',
+                    position: { x: 90, y: 38 },
+                    svgElement: 'patient',
+                    icon: 'fas fa-user',
+                    description: 'Interface between the ventilator and the patient, typically an endotracheal tube or mask.',
+                    function: 'Delivers the ventilator-assisted breaths directly to the patient\'s airway.'
+                },
+                {
+                    id: 'power-control',
+                    name: 'Power Control Unit',
+                    position: { x: 68, y: 70 },
+                    svgElement: 'powerControl',
+                    icon: 'fas fa-bolt',
+                    description: 'Controls and regulates the power for the ventilator system.',
+                    function: 'Manages electrical power distribution to different components of the ventilator.'
+                },
+                {
+                    id: 'control-unit',
+                    name: 'Control Unit',
+                    position: { x: 55, y: 78 },
+                    svgElement: 'controlUnit',
+                    icon: 'fas fa-microchip',
+                    description: 'Central processing unit that controls all ventilator functions.',
+                    function: 'Processes inputs from sensors and user settings to control the ventilator operations.'
+                },
+                {
+                    id: 'ups',
+                    name: 'UPS (Backup Power)',
+                    position: { x: 35, y: 78 },
+                    svgElement: 'ups',
+                    icon: 'fas fa-battery-full',
+                    description: 'Uninterruptible Power Supply that provides backup power in case of main power failure.',
+                    function: 'Ensures continuous ventilator operation during power outages for patient safety.'
+                }
+            ];
+            
+            // Create hotspots
+            const overlayContainer = document.querySelector('.overlay-container');
+            if(overlayContainer) {
+                ventilatorComponents.forEach(component => {
+                    const hotspot = document.createElement('div');
+                    hotspot.className = 'hotspot';
+                    hotspot.dataset.componentId = component.id;
+                    hotspot.style.left = `${component.position.x}%`;
+                    hotspot.style.top = `${component.position.y}%`;
+                    
+                    // Tooltip using Bootstrap attributes
+                    hotspot.setAttribute('data-bs-toggle', 'tooltip');
+                    hotspot.setAttribute('data-bs-placement', 'top');
+                    hotspot.setAttribute('title', component.name);
+                    
+                    hotspot.addEventListener('click', function() {
+                        showComponentDetails(component);
+                        // Remove active class from all hotspots
+                        document.querySelectorAll('.hotspot').forEach(h => h.classList.remove('active'));
+                        // Reset highlight on all SVG elements
+                        resetSvgHighlights();
+                        // Add active class to clicked hotspot
+                        this.classList.add('active');
+                        // Highlight the corresponding SVG element
+                        highlightSvgElement(component.svgElement);
+                    });
+                    
+                    overlayContainer.appendChild(hotspot);
+                });
+                
+                // Initialize tooltips
+                const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+                if (typeof bootstrap !== 'undefined') {
+                    tooltips.forEach(tooltip => {
+                        new bootstrap.Tooltip(tooltip);
+                    });
+                } else {
+                    console.warn('Bootstrap JavaScript not loaded. Tooltips will not function.');
+                }
+                
+                // Add pulse animation to oxygen source hotspot by default
+                setTimeout(() => {
+                    const hotspots = document.querySelectorAll('.hotspot');
+                    if (hotspots.length > 0) {
+                        // Default to oxygen source
+                        let selectedHotspot = hotspots[0]; 
+                        
+                        // Find oxygen source hotspot
+                        for (const hotspot of hotspots) {
+                            if (hotspot.dataset.componentId === 'oxygen-source') {
+                                selectedHotspot = hotspot;
+                                break;
+                            }
+                        }
+                        
+                        selectedHotspot.classList.add('pulse');
+                        selectedHotspot.classList.add('active');
+                        
+                        // Show its details
+                        const componentId = selectedHotspot.dataset.componentId;
+                        const component = ventilatorComponents.find(c => c.id === componentId);
+                        if (component) {
+                            showComponentDetails(component);
+                            // Highlight the corresponding SVG element
+                            highlightSvgElement(component.svgElement);
+                        }
+                    }
+                }, 1000);
+            }
+            
+            // Function to highlight SVG element
+            function highlightSvgElement(elementId) {
+                const svgElement = document.getElementById(elementId);
+                if (svgElement) {
+                    // Add a highlight filter
+                    svgElement.setAttribute('filter', 'url(#highlight-filter)');
+                    // Add glow animation class if supported
+                    svgElement.classList.add('highlight-glow');
+                }
+            }
+            
+            // Function to reset all SVG highlights
+            function resetSvgHighlights() {
+                document.querySelectorAll('#ventilatorDiagram g').forEach(element => {
+                    element.removeAttribute('filter');
+                    element.classList.remove('highlight-glow');
+                });
+            }
+            
+            // Add SVG filters for highlighting
+            const svg = document.getElementById('ventilatorDiagram');
+            if (svg) {
+                // Create a defs section if it doesn't exist
+                let defs = svg.querySelector('defs');
+                if (!defs) {
+                    defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+                    svg.insertBefore(defs, svg.firstChild);
+                }
+                
+                // Add highlight filter
+                const filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+                filter.setAttribute('id', 'highlight-filter');
+                filter.innerHTML = `
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur"/>
+                    <feFlood flood-color="#4361ee" flood-opacity="0.7" result="color"/>
+                    <feComposite in="color" in2="blur" operator="in" result="blur"/>
+                    <feMerge>
+                        <feMergeNode in="blur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                `;
+                defs.appendChild(filter);
+                
+                // Animation styles are now defined in the CSS section at the top of the document
+            }
+            
+            // Function to show component details
+            function showComponentDetails(component) {
+                const componentDetails = document.getElementById('componentDetails');
+                if (componentDetails) {
+                    // Custom component icon mapping
+                    const iconMap = {
+                        'oxygen-source': '<i class="fas fa-flask"></i>',
+                        'air-source': '<i class="fas fa-wind"></i>',
+                        'buffer': '<i class="fas fa-database"></i>',
+                        'mechanical-paddle': '<i class="fas fa-cogs"></i>',
+                        'step-motor': '<i class="fas fa-cog"></i>',
+                        'power-control': '<i class="fas fa-bolt"></i>',
+                        'control-unit': '<i class="fas fa-microchip"></i>',
+                        'peep-valve': '<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 12h5v8h10v-8h5L12 2z"/></svg>',
+                        'flow-sensor': '<i class="fas fa-tachometer-alt"></i>',
+                        'filter': '<i class="fas fa-filter"></i>',
+                        'patient-connection': '<i class="fas fa-user"></i>',
+                        'ups': '<i class="fas fa-battery-full"></i>'
+                    };
+                    
+                    // Get custom icon or use default
+                    const componentIcon = iconMap[component.id] || `<i class="${component.icon}"></i>`;
+                    
+                    componentDetails.innerHTML = `
+                        <div class="text-center mb-5">
+                            <div class="component-icon-large">${componentIcon}</div>
+                            <h2 class="component-title">${component.name}</h2>
+                        </div>
+                        <div class="component-section mb-4">
+                            <div class="component-label">
+                                <span class="component-label-icon"><i class="fas fa-info-circle"></i></span>
+                                Description
+                            </div>
+                            <p class="component-text">${component.description}</p>
+                        </div>
+                        <div class="component-section">
+                            <div class="component-label">
+                                <span class="component-label-icon"><i class="fas fa-cogs"></i></span>
+                                Function
+                            </div>
+                            <p class="component-text">${component.function}</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Toggle diagram visibility
+            const toggleDiagramBtn = document.getElementById('toggleDiagram');
+            const diagramContainer = document.getElementById('diagramContainer');
+            
+            if (toggleDiagramBtn && diagramContainer) {
+                toggleDiagramBtn.addEventListener('click', function() {
+                    if (diagramContainer.style.display === 'none') {
+                        diagramContainer.style.display = 'block';
+                        this.innerHTML = '<i class="fas fa-chevron-up"></i>';
+                    } else {
+                        diagramContainer.style.display = 'none';
+                        this.innerHTML = '<i class="fas fa-chevron-down"></i>';
+                    }
+                });
             }
         });
         
-        // Calculate ideal tidal volume
+        // Calculate ideal tidal volume with animations
         document.getElementById('calculateVt').addEventListener('click', function() {
-            const weight = parseFloat(document.getElementById('patientWeight').value);
-            const condition = document.getElementById('patientCondition').value;
-            let idealVtPerKg = parseFloat(document.getElementById('idealVt').value);
+            const button = this;
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Calculating...';
             
-            // Adjust ideal Vt based on condition
-            if (condition === 'ards') {
-                document.getElementById('idealVt').value = '5';
-                idealVtPerKg = 5;
-            } else if (condition === 'copd') {
-                document.getElementById('idealVt').value = '6';
-                idealVtPerKg = 6;
+            setTimeout(() => {
+                const weight = parseFloat(document.getElementById('patientWeight').value);
+                const condition = document.getElementById('patientCondition').value;
+                let idealVtPerKg = parseFloat(document.getElementById('idealVt').value);
+                
+                // Adjust ideal Vt based on condition
+                if (condition === 'ards') {
+                    document.getElementById('idealVt').value = '5';
+                    idealVtPerKg = 5;
+                } else if (condition === 'copd') {
+                    document.getElementById('idealVt').value = '6';
+                    idealVtPerKg = 6;
+                }
+                
+                const idealVt = Math.round(weight * idealVtPerKg);
+                
+                // Animate the tidal volume change
+                animateValueChange('tidalVolume', parseInt(document.getElementById('tidalVolume').value), idealVt, 500);
+                
+                // Update the delivered Vt display (simulating 95-105% of set Vt)
+                const deliveredVt = idealVt * (0.95 + Math.random() * 0.1);
+                updateParameter('Delivered Vt', Math.round(deliveredVt), 'mL', 
+                                Math.abs(deliveredVt - idealVt) < 0.1 * idealVt ? 'normal' : 'warning');
+                
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-calculator me-2"></i>Calculate Ideal Vt';
+                
+                // Show a success message
+                showToast('Tidal volume calculated successfully!');
+            }, 800);
+        });
+        
+        // Function to animate value changes
+        function animateValueChange(elementId, start, end, duration) {
+            const element = document.getElementById(elementId);
+            const range = end - start;
+            const minStep = 1;
+            let startTime = null;
+            
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const progress = Math.min((timestamp - startTime) / duration, 1);
+                const value = Math.floor(progress * range + start);
+                element.value = value;
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
             }
             
-            const idealVt = Math.round(weight * idealVtPerKg);
-            document.getElementById('tidalVolume').value = idealVt;
+            window.requestAnimationFrame(step);
+        }
+        
+        // Function to show toast notifications
+        function showToast(message, type = 'success') {
+            // Create toast container if it doesn't exist
+            let toastContainer = document.getElementById('toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toast-container';
+                toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
+                toastContainer.style.zIndex = '11';
+                document.body.appendChild(toastContainer);
+            }
             
-            // Update the delivered Vt display (simulating 95-105% of set Vt)
-            const deliveredVt = idealVt * (0.95 + Math.random() * 0.1);
-            updateParameter('Delivered Vt', Math.round(deliveredVt), 'mL', 
-                          Math.abs(deliveredVt - idealVt) < 0.1 * idealVt ? 'normal' : 'warning');
-        });
+            // Create toast
+            const toastId = 'toast-' + Date.now();
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0`;
+            toast.id = toastId;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+            toast.setAttribute('aria-atomic', 'true');
+            
+            // Toast content
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // Initialize and show the toast
+            if (typeof bootstrap !== 'undefined') {
+                const bsToast = new bootstrap.Toast(toast, {
+                    autohide: true,
+                    delay: 3000
+                });
+                bsToast.show();
+            } else {
+                console.warn('Bootstrap JavaScript not loaded. Toast will not function properly.');
+                // Fallback for toast display
+                toast.style.display = 'block';
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            }
+            
+            // Remove toast after it's hidden
+            toast.addEventListener('hidden.bs.toast', function() {
+                toast.remove();
+            });
+        }
         
         // Function to update parameter display
         function updateParameter(name, value, unit, status) {
-            // In a real app, this would update the parameter cards
-            console.log(`Updating ${name}: ${value} ${unit} (${status})`);
+            // Find all elements with parameter name
+            const parameterCards = document.querySelectorAll('.parameter-card');
+            
+            parameterCards.forEach(card => {
+                const nameElement = card.querySelector('span:first-child');
+                if (nameElement && nameElement.textContent.includes(name)) {
+                    // Update value
+                    const valueElement = card.querySelector('.parameter-value');
+                    if (valueElement) {
+                        valueElement.innerHTML = `${value} <small class="text-muted">${unit}</small>`;
+                        
+                        // Update status indicator
+                        const indicator = card.querySelector('.alert-indicator');
+                        if (indicator) {
+                            indicator.className = 'alert-indicator';
+                            indicator.classList.add(`alert-${status}`);
+                        }
+                        
+                        // Update progress bar if present
+                        const progressBar = card.querySelector('.progress-bar');
+                        if (progressBar) {
+                            if (status === 'normal') {
+                                progressBar.className = 'progress-bar bg-success';
+                            } else if (status === 'warning') {
+                                progressBar.className = 'progress-bar bg-warning';
+                            } else if (status === 'danger') {
+                                progressBar.className = 'progress-bar bg-danger';
+                            }
+                        }
+                        
+                        // Add highlight animation
+                        card.classList.add('highlight-update');
+                        setTimeout(() => {
+                            card.classList.remove('highlight-update');
+                        }, 1500);
+                    }
+                }
+            });
         }
         
-        // Initialize charts
+        // Initialize charts with improved options
         function initializeCharts() {
+            // Get theme colors
+            const primaryColor = getComputedStyle(document.body).getPropertyValue('--primary-color').trim() || 'rgba(75, 192, 192, 1)';
+            const secondaryColor = getComputedStyle(document.body).getPropertyValue('--secondary-color').trim() || 'rgba(153, 102, 255, 1)';
+            const warningColor = getComputedStyle(document.body).getPropertyValue('--warning-color').trim() || 'rgba(255, 159, 64, 1)';
+            
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 0
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                        titleFont: {
+                            size: 14
+                        },
+                        bodyFont: {
+                            size: 13
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                }
+            };
+            
+            // Check if charts already exist and destroy them
+            if (charts.pressureTime) charts.pressureTime.destroy();
+            if (charts.flowTime) charts.flowTime.destroy();
+            if (charts.volumeTime) charts.volumeTime.destroy();
+            if (charts.pvLoop) charts.pvLoop.destroy();
+            if (charts.fvLoop) charts.fvLoop.destroy();
+            
             // Pressure vs Time Chart
             const pressureTimeCtx = document.getElementById('pressureTimeChart').getContext('2d');
-            const pressureTimeChart = new Chart(pressureTimeCtx, {
+            charts.pressureTime = new Chart(pressureTimeCtx, {
                 type: 'line',
                 data: {
                     labels: Array.from({length: 100}, (_, i) => i/10),
@@ -452,15 +2452,15 @@
                                 return 5;
                             }
                         }),
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: primaryColor,
+                        backgroundColor: hexToRgba(primaryColor, 0.2),
                         borderWidth: 2,
-                        tension: 0.1
+                        tension: 0.1,
+                        fill: true
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    ...chartOptions,
                     scales: {
                         x: {
                             title: {
@@ -476,16 +2476,13 @@
                             min: 0,
                             max: 35
                         }
-                    },
-                    animation: {
-                        duration: 0
                     }
                 }
             });
             
             // Flow vs Time Chart
             const flowTimeCtx = document.getElementById('flowTimeChart').getContext('2d');
-            const flowTimeChart = new Chart(flowTimeCtx, {
+            charts.flowTime = new Chart(flowTimeCtx, {
                 type: 'line',
                 data: {
                     labels: Array.from({length: 100}, (_, i) => i/10),
@@ -500,15 +2497,15 @@
                                 return -20 * (x % 2.5 - 1) / 1.5;
                             }
                         }),
-                        borderColor: 'rgba(153, 102, 255, 1)',
-                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                        borderColor: secondaryColor,
+                        backgroundColor: hexToRgba(secondaryColor, 0.2),
                         borderWidth: 2,
-                        tension: 0.1
+                        tension: 0.1,
+                        fill: true
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    ...chartOptions,
                     scales: {
                         x: {
                             title: {
@@ -524,16 +2521,13 @@
                             min: -30,
                             max: 60
                         }
-                    },
-                    animation: {
-                        duration: 0
                     }
                 }
             });
             
             // Volume vs Time Chart
             const volumeTimeCtx = document.getElementById('volumeTimeChart').getContext('2d');
-            const volumeTimeChart = new Chart(volumeTimeCtx, {
+            charts.volumeTime = new Chart(volumeTimeCtx, {
                 type: 'line',
                 data: {
                     labels: Array.from({length: 100}, (_, i) => i/10),
@@ -548,15 +2542,15 @@
                                 return 350;
                             }
                         }),
-                        borderColor: 'rgba(255, 159, 64, 1)',
-                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                        borderColor: warningColor,
+                        backgroundColor: hexToRgba(warningColor, 0.2),
                         borderWidth: 2,
-                        tension: 0.1
+                        tension: 0.1,
+                        fill: true
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    ...chartOptions,
                     scales: {
                         x: {
                             title: {
@@ -570,93 +2564,83 @@
                                 text: 'Volume (mL)'
                             },
                             min: 0,
-                            max: 400
+                            max: 500
                         }
-                    },
-                    animation: {
-                        duration: 0
                     }
                 }
             });
             
-            // Pressure-Volume Loop
+            // P-V Loop Chart
             const pvLoopCtx = document.getElementById('pvLoopChart').getContext('2d');
-            const pvLoopChart = new Chart(pvLoopCtx, {
-                type: 'line',
+            charts.pvLoop = new Chart(pvLoopCtx, {
+                type: 'scatter',
                 data: {
                     datasets: [{
-                        label: 'PV Loop',
-                        data: Array.from({length: 50}, (_, i) => {
-                            const t = i/50;
-                            const volume = 350 * t;
-                            const pressure = 5 + 20 * (1 - Math.cos(Math.PI * t)) / 2;
-                            return {x: volume, y: pressure};
-                        }),
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderWidth: 2,
+                        label: 'P-V Loop',
+                        data: (() => {
+                            const data = [];
+                            for (let i = 0; i <= 100; i++) {
+                                const pressure = i < 50 ? i / 2 : 25 - (i - 50) / 2;
+                                const volume = i < 50 ? 350 * (i / 50) : 350 * (1 - (i - 50) / 50);
+                                data.push({x: pressure, y: volume});
+                            }
+                            return data;
+                        })(),
+                        borderColor: primaryColor,
+                        backgroundColor: 'transparent',
+                        pointRadius: 0,
                         showLine: true,
-                        fill: false
+                        borderWidth: 2
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    ...chartOptions,
                     scales: {
                         x: {
-                            title: {
-                                display: true,
-                                text: 'Volume (mL)'
-                            },
-                            min: 0,
-                            max: 400
-                        },
-                        y: {
                             title: {
                                 display: true,
                                 text: 'Pressure (cmH₂O)'
                             },
                             min: 0,
-                            max: 35
+                            max: 30
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Volume (mL)'
+                            },
+                            min: 0,
+                            max: 500
                         }
-                    },
-                    animation: {
-                        duration: 0
                     }
                 }
             });
             
-            // Flow-Volume Loop
+            // F-V Loop Chart
             const fvLoopCtx = document.getElementById('fvLoopChart').getContext('2d');
-            const fvLoopChart = new Chart(fvLoopCtx, {
-                type: 'line',
+            charts.fvLoop = new Chart(fvLoopCtx, {
+                type: 'scatter',
                 data: {
                     datasets: [{
-                        label: 'FV Loop',
-                        data: Array.from({length: 100}, (_, i) => {
-                            const t = i/100;
-                            if (t < 0.4) {
-                                // Inspiration
-                                const volume = 350 * t/0.4;
-                                const flow = 55 * Math.sin(Math.PI * t/0.4);
-                                return {x: volume, y: flow};
-                            } else {
-                                // Expiration
-                                const volume = 350 * (1 - (t-0.4)/0.6);
-                                const flow = -30 * (t-0.4)/0.6;
-                                return {x: volume, y: flow};
+                        label: 'F-V Loop',
+                        data: (() => {
+                            const data = [];
+                            for (let i = 0; i <= 100; i++) {
+                                const flow = i < 50 ? 60 * Math.sin(Math.PI * i / 50) : -40 * Math.sin(Math.PI * (i - 50) / 50);
+                                const volume = i < 50 ? 350 * (i / 50) : 350 * (1 - (i - 50) / 50);
+                                data.push({x: volume, y: flow});
                             }
-                        }),
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderWidth: 2,
+                            return data;
+                        })(),
+                        borderColor: secondaryColor,
+                        backgroundColor: 'transparent',
+                        pointRadius: 0,
                         showLine: true,
-                        fill: false
+                        borderWidth: 2
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    ...chartOptions,
                     scales: {
                         x: {
                             title: {
@@ -664,60 +2648,557 @@
                                 text: 'Volume (mL)'
                             },
                             min: 0,
-                            max: 400
+                            max: 500
                         },
                         y: {
                             title: {
                                 display: true,
                                 text: 'Flow (L/min)'
                             },
-                            min: -40,
-                            max: 60
+                            min: -50,
+                            max: 70
                         }
-                    },
-                    animation: {
-                        duration: 0
                     }
                 }
             });
             
-            // Simulate real-time updates
-            setInterval(() => {
-                // Update pressure waveform
-                const pressureData = pressureTimeChart.data.datasets[0].data;
-                pressureData.shift();
-                const lastTime = parseFloat(pressureTimeChart.data.labels[pressureTimeChart.data.labels.length - 1]) + 0.1;
-                pressureTimeChart.data.labels.push(lastTime.toFixed(1));
-                pressureTimeChart.data.labels.shift();
+            // Apply dark mode to charts if needed
+            if (document.body.classList.contains('dark-mode')) {
+                updateChartsForDarkMode(true);
+            }
+        }
+        
+        // Helper function to convert hex to rgba
+        function hexToRgba(hex, alpha = 1) {
+            // Remove the hash if it exists
+            hex = hex.replace('#', '');
+            
+            // Parse the hex values
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            
+            // Return the rgba value
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+        
+        // Function to simulate real-time ventilator data updates
+        function updateRealTimeData() {
+            // Randomly select a parameter to update
+            const parameters = [
+                { name: 'Peak Pressure (Ppeak)', min: 18, max: 30, unit: 'cmH₂O', normalMax: 25 },
+                { name: 'Plateau Pressure', min: 15, max: 28, unit: 'cmH₂O', normalMax: 23 },
+                { name: 'Dynamic Compliance (Cdyn)', min: 25, max: 50, unit: 'mL/cmH₂O', normalMin: 30 },
+                { name: 'Mean Airway Pressure', min: 10, max: 18, unit: 'cmH₂O', normalMax: 15 },
+                { name: 'Minute Ventilation', min: 6, max: 12, unit: 'L/min', normalMin: 7, normalMax: 10 },
+                { name: 'Delivered Vt', min: 300, max: 650, unit: 'mL', normalMin: 350, normalMax: 550 }
+            ];
+            
+            // Pick a random parameter to update
+            const param = parameters[Math.floor(Math.random() * parameters.length)];
+            
+            // Generate a random value
+            const value = param.min + Math.random() * (param.max - param.min);
+            const roundedValue = Math.round(value);
+            
+            // Determine status based on value
+            let status = 'normal';
+            if (param.normalMin && value < param.normalMin) {
+                status = value < (param.normalMin * 0.8) ? 'danger' : 'warning';
+            } else if (param.normalMax && value > param.normalMax) {
+                status = value > (param.normalMax * 1.2) ? 'danger' : 'warning';
+            }
+            
+            // Update parameter display
+            updateParameter(param.name, roundedValue, param.unit, status);
+            
+            // Update corresponding chart data periodically (every ~2 seconds)
+            if (Math.random() < 0.05) {
+                updateChartData();
+            }
+        }
+        
+        // Function to update chart data
+        function updateChartData() {
+            if (!charts.pressureTime || !charts.flowTime || !charts.volumeTime) return;
+            
+            // Update waveform data with slight variations
+            const pressureData = charts.pressureTime.data.datasets[0].data;
+            const flowData = charts.flowTime.data.datasets[0].data;
+            const volumeData = charts.volumeTime.data.datasets[0].data;
+            
+            for (let i = 0; i < pressureData.length; i++) {
+                const x = i/10;
+                // Pressure waveform
+                if (x % 2.5 < 1) {
+                    pressureData[i] = 5 + (20 + Math.random() * 2 - 1) * (1 - Math.cos(Math.PI * (x % 2.5) / 1)) / 2;
+                } else {
+                    pressureData[i] = 5 + Math.random() * 0.5 - 0.25;
+                }
                 
-                const newPressure = lastTime % 2.5 < 1 ? 
-                    5 + 20 * (1 - Math.cos(Math.PI * (lastTime % 2.5) / 1)) / 2 : 
-                    5;
-                pressureData.push(newPressure);
-                pressureTimeChart.update();
+                // Flow waveform
+                if (x % 2.5 < 1) {
+                    flowData[i] = (55 + Math.random() * 4 - 2) * Math.sin(Math.PI * (x % 2.5) / 1);
+                } else {
+                    flowData[i] = (-20 + Math.random() * 2 - 1) * (x % 2.5 - 1) / 1.5;
+                }
                 
-                // Update flow waveform
-                const flowData = flowTimeChart.data.datasets[0].data;
-                flowData.shift();
-                const newFlow = lastTime % 2.5 < 1 ? 
-                    55 * Math.sin(Math.PI * (lastTime % 2.5) / 1) : 
-                    -20 * (lastTime % 2.5 - 1) / 1.5;
-                flowData.push(newFlow);
-                flowTimeChart.update();
+                // Volume waveform
+                if (x % 2.5 < 1) {
+                    volumeData[i] = (350 + Math.random() * 20 - 10) * (1 - Math.cos(Math.PI * (x % 2.5) / 1)) / 2;
+                } else {
+                    volumeData[i] = 350 + Math.random() * 10 - 5;
+                }
+            }
+            
+            // Update charts
+            charts.pressureTime.update();
+            charts.flowTime.update();
+            charts.volumeTime.update();
+            
+            // Update loops periodically
+            updateLoops();
+        }
+        
+        // Function to update PV and FV loops
+        function updateLoops() {
+            if (!charts.pvLoop || !charts.fvLoop) return;
+            
+            // Update PV loop with slight variations
+            const pvData = [];
+            for (let i = 0; i <= 100; i++) {
+                const pressure = i < 50 ? 
+                    i / 2 + Math.random() * 0.5 - 0.25 : 
+                    25 - (i - 50) / 2 + Math.random() * 0.5 - 0.25;
+                const volume = i < 50 ? 
+                    (350 + Math.random() * 20 - 10) * (i / 50) : 
+                    (350 + Math.random() * 20 - 10) * (1 - (i - 50) / 50);
+                pvData.push({x: pressure, y: volume});
+            }
+            charts.pvLoop.data.datasets[0].data = pvData;
+            charts.pvLoop.update();
+            
+            // Update FV loop with slight variations
+            const fvData = [];
+            for (let i = 0; i <= 100; i++) {
+                const flow = i < 50 ? 
+                    (60 + Math.random() * 4 - 2) * Math.sin(Math.PI * i / 50) : 
+                    (-40 + Math.random() * 3 - 1.5) * Math.sin(Math.PI * (i - 50) / 50);
+                const volume = i < 50 ? 
+                    (350 + Math.random() * 20 - 10) * (i / 50) : 
+                    (350 + Math.random() * 20 - 10) * (1 - (i - 50) / 50);
+                fvData.push({x: volume, y: flow});
+            }
+            charts.fvLoop.data.datasets[0].data = fvData;
+            charts.fvLoop.update();
+        }
+        
+        // Handle Quick Action buttons
+        function setupQuickActions() {
+            // Export Report button
+            const exportButton = document.querySelector('.btn-outline-primary');
+            if (exportButton) {
+                exportButton.addEventListener('click', function() {
+                    // Show loading state
+                    const originalHTML = this.innerHTML;
+                    this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Exporting...';
+                    this.disabled = true;
+                    
+                    // Simulate export process
+                    setTimeout(() => {
+                        // Restore button state
+                        this.innerHTML = originalHTML;
+                        this.disabled = false;
+                        
+                        // Show success message
+                        showToast('Report exported successfully!', 'success');
+                    }, 1500);
+                });
+            }
+            
+            // Refresh Data button
+            const refreshButton = document.querySelector('.btn-outline-success');
+            if (refreshButton) {
+                refreshButton.addEventListener('click', function() {
+                    // Show loading state
+                    const originalHTML = this.innerHTML;
+                    this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Refreshing...';
+                    this.disabled = true;
+                    
+                    // Simulate refresh process
+                    setTimeout(() => {
+                        // Force update charts and parameters
+                        updateChartData();
+                        
+                        // Restore button state
+                        this.innerHTML = originalHTML;
+                        this.disabled = false;
+                        
+                        // Show success message
+                        showToast('Data refreshed successfully!', 'success');
+                    }, 1000);
+                });
+            }
+            
+            // Manage Alerts button
+            const alertsButton = document.querySelector('.btn-outline-warning');
+            if (alertsButton) {
+                alertsButton.addEventListener('click', function() {
+                    // Show alerts modal
+                    showAlertsModal();
+                });
+            }
+            
+            // Help Guide button
+            const helpButton = document.querySelector('.btn-outline-info');
+            if (helpButton) {
+                helpButton.addEventListener('click', function() {
+                    // Show help modal
+                    showHelpModal();
+                });
+            }
+        }
+        
+        // Function to show alerts modal
+        function showAlertsModal() {
+            // Create modal structure if it doesn't exist
+            let modal = document.getElementById('alertsModal');
+            
+            if (!modal) {
+                // Create modal element
+                modal = document.createElement('div');
+                modal.className = 'modal fade';
+                modal.id = 'alertsModal';
+                modal.tabIndex = '-1';
+                modal.setAttribute('aria-labelledby', 'alertsModalLabel');
+                modal.setAttribute('aria-hidden', 'true');
                 
-                // Update volume waveform
-                const volumeData = volumeTimeChart.data.datasets[0].data;
-                volumeData.shift();
-                const newVolume = lastTime % 2.5 < 1 ? 
-                    350 * (1 - Math.cos(Math.PI * (lastTime % 2.5) / 1)) / 2 : 
-                    350;
-                volumeData.push(newVolume);
-                volumeTimeChart.update();
-            }, 100);
+                // Modal content
+                modal.innerHTML = `
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="alertsModalLabel">Manage Alerts</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h6 class="mb-3">Configure Alert Thresholds</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="peakPressureThreshold" class="form-label">Peak Pressure (cmH₂O)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="peakPressureThreshold" value="30">
+                                            <span class="input-group-text"><i class="fas fa-exclamation-triangle"></i></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="plateauPressureThreshold" class="form-label">Plateau Pressure (cmH₂O)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="plateauPressureThreshold" value="25">
+                                            <span class="input-group-text"><i class="fas fa-exclamation-triangle"></i></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="minVtThreshold" class="form-label">Min Tidal Volume (mL)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="minVtThreshold" value="300">
+                                            <span class="input-group-text"><i class="fas fa-exclamation-triangle"></i></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="maxVtThreshold" class="form-label">Max Tidal Volume (mL)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="maxVtThreshold" value="600">
+                                            <span class="input-group-text"><i class="fas fa-exclamation-triangle"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <hr class="my-4">
+                                
+                                <h6 class="mb-3">Current Alerts</h6>
+                                <div class="alert alert-warning">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-3 fa-lg"></i>
+                                        <div>
+                                            <strong>Trigger Sensitivity Warning</strong>
+                                            <p class="mb-0 small">Trigger sensitivity of 3.0 L/min may delay triggering in weak patients.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="alert alert-warning">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle me-3 fa-lg"></i>
+                                        <div>
+                                            <strong>Dynamic Compliance Warning</strong>
+                                            <p class="mb-0 small">Borderline compliance (30 mL/cmH₂O) suggests moderate lung stiffness.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" id="saveAlertSettings">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add to document
+                document.body.appendChild(modal);
+                
+                // Handle save settings button
+                const saveButton = modal.querySelector('#saveAlertSettings');
+                if (saveButton) {
+                    saveButton.addEventListener('click', function() {
+                        // Save alert settings (in a real app, this would save to backend)
+                        showToast('Alert settings saved successfully!', 'success');
+                        
+                        // Close modal
+                        if (typeof bootstrap !== 'undefined') {
+                            const modalInstance = bootstrap.Modal.getInstance(modal);
+                            if (modalInstance) modalInstance.hide();
+                        }
+                    });
+                }
+            }
+            
+            // Show modal
+            if (typeof bootstrap !== 'undefined') {
+                const modalInstance = new bootstrap.Modal(modal);
+                modalInstance.show();
+            } else {
+                showToast('Bootstrap JavaScript not loaded. Cannot open modal.', 'warning');
+            }
+        }
+        
+        // Function to show help modal
+        function showHelpModal() {
+            // Create modal structure if it doesn't exist
+            let modal = document.getElementById('helpModal');
+            
+            if (!modal) {
+                // Create modal element
+                modal = document.createElement('div');
+                modal.className = 'modal fade';
+                modal.id = 'helpModal';
+                modal.tabIndex = '-1';
+                modal.setAttribute('aria-labelledby', 'helpModalLabel');
+                modal.setAttribute('aria-hidden', 'true');
+                
+                // Get current language for help content
+                const language = localStorage.getItem('language') || 'en';
+                
+                // Modal content based on language
+                const helpTitle = language === 'en' ? 'Help Guide' : 
+                                  language === 'es' ? 'Guía de Ayuda' :
+                                  language === 'fr' ? 'Guide d\'Aide' :
+                                  language === 'de' ? 'Hilfeleitfaden' : '帮助指南';
+                
+                modal.innerHTML = `
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="helpModalLabel">${helpTitle}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="accordion" id="helpAccordion">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="headingOne">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                                ${language === 'en' ? 'Getting Started' : 
+                                                  language === 'es' ? 'Comenzando' :
+                                                  language === 'fr' ? 'Premiers pas' :
+                                                  language === 'de' ? 'Erste Schritte' : '开始使用'}
+                                            </button>
+                                        </h2>
+                                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#helpAccordion">
+                                            <div class="accordion-body">
+                                                <p>${language === 'en' ? 'Welcome to the Ventilator Assistant! This tool helps clinicians monitor and optimize mechanical ventilation settings for patients.' : 
+                                                     language === 'es' ? '¡Bienvenido al Asistente de Ventilador! Esta herramienta ayuda a los médicos a monitorear y optimizar la configuración de ventilación mecánica para los pacientes.' :
+                                                     language === 'fr' ? 'Bienvenue dans l\'Assistant Ventilateur ! Cet outil aide les cliniciens à surveiller et à optimiser les paramètres de ventilation mécanique pour les patients.' :
+                                                     language === 'de' ? 'Willkommen beim Beatmungsassistenten! Dieses Tool hilft Klinikern, die Einstellungen der mechanischen Beatmung für Patienten zu überwachen und zu optimieren.' : '欢迎使用呼吸机助手！该工具帮助临床医生监控和优化患者的机械通气设置。'}</p>
+                                                <p>${language === 'en' ? 'To get started, enter patient information in the Patient Data section and adjust ventilator settings as needed.' : 
+                                                     language === 'es' ? 'Para comenzar, ingrese la información del paciente en la sección Datos del Paciente y ajuste la configuración del ventilador según sea necesario.' :
+                                                     language === 'fr' ? 'Pour commencer, entrez les informations du patient dans la section Données Patient et ajustez les paramètres du ventilateur si nécessaire.' :
+                                                     language === 'de' ? 'Um zu beginnen, geben Sie Patienteninformationen im Abschnitt Patientendaten ein und passen Sie die Beatmungseinstellungen nach Bedarf an.' : '要开始使用，请在患者数据部分输入患者信息，并根据需要调整呼吸机设置。'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="headingTwo">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                                ${language === 'en' ? 'Ventilator Parameters' : 
+                                                  language === 'es' ? 'Parámetros del Ventilador' :
+                                                  language === 'fr' ? 'Paramètres du Ventilateur' :
+                                                  language === 'de' ? 'Beatmungsparameter' : '呼吸机参数'}
+                                            </button>
+                                        </h2>
+                                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#helpAccordion">
+                                            <div class="accordion-body">
+                                                <ul>
+                                                    <li><strong>${language === 'en' ? 'Peak Pressure' : 
+                                                                 language === 'es' ? 'Presión Pico' :
+                                                                 language === 'fr' ? 'Pression de Crête' :
+                                                                 language === 'de' ? 'Spitzendruck' : '峰值压力'}</strong>: ${language === 'en' ? 'Maximum pressure during inspiration. Should usually be below 30 cmH₂O.' : 
+                                                                          language === 'es' ? 'Presión máxima durante la inspiración. Generalmente debe estar por debajo de 30 cmH₂O.' :
+                                                                          language === 'fr' ? 'Pression maximale pendant l\'inspiration. Devrait généralement être inférieure à 30 cmH₂O.' :
+                                                                          language === 'de' ? 'Maximaler Druck während der Einatmung. Sollte normalerweise unter 30 cmH₂O liegen.' : '吸气过程中的最大压力。通常应低于30 cmH₂O。'}</li>
+                                                    <li><strong>${language === 'en' ? 'Plateau Pressure' : 
+                                                                 language === 'es' ? 'Presión Meseta' :
+                                                                 language === 'fr' ? 'Pression Plateau' :
+                                                                 language === 'de' ? 'Plateaudruck' : '平台压力'}</strong>: ${language === 'en' ? 'Pressure at end of inspiration pause. Indicator of lung distension.' : 
+                                                                          language === 'es' ? 'Presión al final de la pausa inspiratoria. Indicador de distensión pulmonar.' :
+                                                                          language === 'fr' ? 'Pression à la fin de la pause inspiratoire. Indicateur de distension pulmonaire.' :
+                                                                          language === 'de' ? 'Druck am Ende der Inspirationspause. Indikator für Lungendehnung.' : '吸气暂停结束时的压力。肺扩张的指标。'}</li>
+                                                    <li><strong>${language === 'en' ? 'Dynamic Compliance' : 
+                                                                 language === 'es' ? 'Distensibilidad Dinámica' :
+                                                                 language === 'fr' ? 'Compliance Dynamique' :
+                                                                 language === 'de' ? 'Dynamische Compliance' : '动态顺应性'}</strong>: ${language === 'en' ? 'Measure of lung elasticity. Lower values indicate stiffer lungs.' : 
+                                                                          language === 'es' ? 'Medida de elasticidad pulmonar. Valores más bajos indican pulmones más rígidos.' :
+                                                                          language === 'fr' ? 'Mesure de l\'élasticité pulmonaire. Des valeurs plus basses indiquent des poumons plus rigides.' :
+                                                                          language === 'de' ? 'Maß für die Lungenelastizität. Niedrigere Werte deuten auf steifere Lungen hin.' : '肺弹性的测量。较低的值表示肺更硬。'}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="headingThree">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                                ${language === 'en' ? 'Interpreting Waveforms' : 
+                                                  language === 'es' ? 'Interpretación de Ondas' :
+                                                  language === 'fr' ? 'Interpréter les Courbes' :
+                                                  language === 'de' ? 'Interpretation von Wellenformen' : '解读波形'}
+                                            </button>
+                                        </h2>
+                                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#helpAccordion">
+                                            <div class="accordion-body">
+                                                <p>${language === 'en' ? 'Ventilator waveforms provide crucial information about patient-ventilator interaction:' : 
+                                                     language === 'es' ? 'Las ondas del ventilador proporcionan información crucial sobre la interacción paciente-ventilador:' :
+                                                     language === 'fr' ? 'Les courbes du ventilateur fournissent des informations cruciales sur l\'interaction patient-ventilateur:' :
+                                                     language === 'de' ? 'Beatmungswellenformen liefern wichtige Informationen über die Patienten-Ventilator-Interaktion:' : '呼吸机波形提供了有关患者-呼吸机交互的关键信息：'}</p>
+                                                <ul>
+                                                    <li><strong>${language === 'en' ? 'Pressure-Time Curve' : 
+                                                                 language === 'es' ? 'Curva Presión-Tiempo' :
+                                                                 language === 'fr' ? 'Courbe Pression-Temps' :
+                                                                 language === 'de' ? 'Druck-Zeit-Kurve' : '压力-时间曲线'}</strong>: ${language === 'en' ? 'Shows pressure changes during the respiratory cycle.' : 
+                                                                          language === 'es' ? 'Muestra cambios de presión durante el ciclo respiratorio.' :
+                                                                          language === 'fr' ? 'Montre les changements de pression pendant le cycle respiratoire.' :
+                                                                          language === 'de' ? 'Zeigt Druckänderungen während des Atemzyklus.' : '显示呼吸周期中的压力变化。'}</li>
+                                                    <li><strong>${language === 'en' ? 'Flow-Time Curve' : 
+                                                                 language === 'es' ? 'Curva Flujo-Tiempo' :
+                                                                 language === 'fr' ? 'Courbe Débit-Temps' :
+                                                                 language === 'de' ? 'Fluss-Zeit-Kurve' : '流量-时间曲线'}</strong>: ${language === 'en' ? 'Indicates gas flow into and out of the lungs.' : 
+                                                                          language === 'es' ? 'Indica el flujo de gas hacia y desde los pulmones.' :
+                                                                          language === 'fr' ? 'Indique le flux de gaz entrant et sortant des poumons.' :
+                                                                          language === 'de' ? 'Zeigt den Gasfluss in die und aus den Lungen an.' : '表示进出肺部的气体流量。'}</li>
+                                                    <li><strong>${language === 'en' ? 'Volume-Time Curve' : 
+                                                                 language === 'es' ? 'Curva Volumen-Tiempo' :
+                                                                 language === 'fr' ? 'Courbe Volume-Temps' :
+                                                                 language === 'de' ? 'Volumen-Zeit-Kurve' : '容量-时间曲线'}</strong>: ${language === 'en' ? 'Shows volume changes during breathing.' : 
+                                                                          language === 'es' ? 'Muestra cambios de volumen durante la respiración.' :
+                                                                          language === 'fr' ? 'Montre les changements de volume pendant la respiration.' :
+                                                                          language === 'de' ? 'Zeigt Volumenänderungen während der Atmung.' : '显示呼吸过程中的容量变化。'}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <h6>${language === 'en' ? 'Need more help?' : 
+                                          language === 'es' ? '¿Necesita más ayuda?' :
+                                          language === 'fr' ? 'Besoin de plus d\'aide?' :
+                                          language === 'de' ? 'Benötigen Sie weitere Hilfe?' : '需要更多帮助？'}</h6>
+                                    <p>${language === 'en' ? 'Contact technical support at support@ventilator-assistant.com' : 
+                                         language === 'es' ? 'Contacte con soporte técnico en soporte@ventilator-assistant.com' :
+                                         language === 'fr' ? 'Contactez le support technique à support@ventilator-assistant.com' :
+                                         language === 'de' ? 'Kontaktieren Sie den technischen Support unter support@ventilator-assistant.com' : '联系技术支持：support@ventilator-assistant.com'}</p>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${language === 'en' ? 'Close' : 
+                                      language === 'es' ? 'Cerrar' :
+                                      language === 'fr' ? 'Fermer' :
+                                      language === 'de' ? 'Schließen' : '关闭'}</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add to document
+                document.body.appendChild(modal);
+            }
+            
+            // Show modal
+            if (typeof bootstrap !== 'undefined') {
+                const modalInstance = new bootstrap.Modal(modal);
+                modalInstance.show();
+            } else {
+                showToast('Bootstrap JavaScript not loaded. Cannot open modal.', 'warning');
+            }
+        }
+        
+        // Function to show toast notification
+        function showToast(message, type = 'success') {
+            // Create toast container if it doesn't exist
+            let toastContainer = document.getElementById('toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toast-container';
+                toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
+                toastContainer.style.zIndex = '11';
+                document.body.appendChild(toastContainer);
+            }
+            
+            // Create toast
+            const toastId = 'toast-' + Date.now();
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0`;
+            toast.id = toastId;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+            toast.setAttribute('aria-atomic', 'true');
+            
+            // Toast content
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // Initialize and show the toast
+            if (typeof bootstrap !== 'undefined') {
+                const bsToast = new bootstrap.Toast(toast, {
+                    autohide: true,
+                    delay: 3000
+                });
+                bsToast.show();
+            } else {
+                // Fallback for toast display
+                toast.style.display = 'block';
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            }
+            
+            // Remove toast after it's hidden
+            toast.addEventListener('hidden.bs.toast', function() {
+                toast.remove();
+            });
         }
         
         // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', initializeCharts);
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            setupQuickActions();
+        });
     </script>
 </body>
 </html>
